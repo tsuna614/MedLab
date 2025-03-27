@@ -8,11 +8,19 @@
 import SwiftUI
 
 struct HomeView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
+    @EnvironmentObject var appViewModel: AppViewModel
 
-#Preview {
-    HomeView()
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("🏠 Home")
+            
+            Button("Sign Out") {
+                appViewModel.signOut()
+            }
+            .padding()
+            .background(Color.red)
+            .foregroundColor(.white)
+            .cornerRadius(8)
+        }
+    }
 }

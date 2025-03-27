@@ -7,27 +7,20 @@
 
 import SwiftUI
 
-class CounterViewModel: ObservableObject {
-    @Published var count = 0
-    
-    func increment() {
-        
-        count += 1
-        print(count)
-    }
-}
-
 struct ContentView: View {
-    @StateObject var viewModel = CounterViewModel()
+    @StateObject private var appViewModel = AppViewModel()
     
     var body: some View {
-        VStack {
-            Text("Counter: \(viewModel.count)")
-            
-            Button("Increment") {
-                viewModel.increment()
+        Group {
+            if appViewModel.isLoading {
+                ProgressView("Checking login...")
+            } else if appViewModel.isAuthenticated {
+                HomeView()
+            } else {
+                LoginView()
             }
         }
+        .environmentObject(appViewModel)
     }
 }
 
