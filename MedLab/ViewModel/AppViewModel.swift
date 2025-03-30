@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor // to remove DispatchQueue.main.async blocks, because Swift will automatically run your code on the main thread
 class AppViewModel: ObservableObject {
     @Published var isAuthenticated = false
     @Published var isLoading = true
@@ -21,30 +22,25 @@ class AppViewModel: ObservableObject {
             let userId = UserDefaultsService.shared.getUserId(),
             let token = UserDefaultsService.shared.getAccessToken()
         else {
-            // Not logged in
-            print("Credentials not found")
             isAuthenticated = false
             isLoading = false
             return
         }
         
-        // Try to fetch user (token might be expired)
-        UserService.shared.fetchUser(userId: userId, accessToken: token) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success:
-                    self.isAuthenticated = true
-                case .failure:
-                    self.isAuthenticated = false
-                }
-                self.isLoading = false
+        Task {
+            do {
+                user = try await UserService.shared.fetchUser(userId: userId, accessToken: token)
+                isAuthenticated = true
+            } catch {
+                print("Fetch user failed: \(error.localizedDescription)")
+                isAuthenticated = false
             }
+            isLoading = false
         }
     }
     
-    func setUser(from dictionary: [String: Any]) {
-        if let userDict = dictionary["userData"] as? [String: Any],
-           let jsonData = try? JSONSerialization.data(withJSONObject: userDict),
+    func setUserFromJSON(from dictionary: [String: Any]) {
+        if let jsonData = try? JSONSerialization.data(withJSONObject: dictionary),
            let decodedUser = try? JSONDecoder().decode(User.self, from: jsonData) {
             self.user = decodedUser
         }

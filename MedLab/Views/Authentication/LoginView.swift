@@ -28,19 +28,16 @@ struct LoginViewContent: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
+                Image("Login")
+                    .resizable()
+                    .scaledToFit()
+                
                 Text("Login")
                     .font(.largeTitle)
                     .bold()
                 
-                TextField("Email", text: $viewModel.email)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .autocorrectionDisabled(true)
-                    .textInputAutocapitalization(.never)
-                
-                SecureField("Password", text: $viewModel.password)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .autocorrectionDisabled(true)
-                    .textInputAutocapitalization(.never)
+                CustomTextField(placeholder: "Email", text: $viewModel.email)
+                CustomTextField(placeholder: "Password", text: $viewModel.password, isSecure: true)
                 
                 if let error = viewModel.errorMessage {
                     Text(error).foregroundColor(.red)
@@ -70,4 +67,3 @@ struct LoginViewContent: View {
         }
     }
 }
-

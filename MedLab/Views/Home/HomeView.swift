@@ -11,16 +11,6 @@ struct HomeView: View {
     @EnvironmentObject var appViewModel: AppViewModel
 
     var body: some View {
-        VStack(spacing: 20) {
-            Text("🏠 Home")
-            
-            Button("Sign Out") {
-                appViewModel.signOut()
-            }
-            .padding()
-            .background(Color.red)
-            .foregroundColor(.white)
-            .cornerRadius(8)
-        }
+        Text("Home View")
     }
 }

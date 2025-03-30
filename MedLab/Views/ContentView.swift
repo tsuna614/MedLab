@@ -15,7 +15,7 @@ struct ContentView: View {
             if appViewModel.isLoading {
                 ProgressView("Checking login...")
             } else if appViewModel.isAuthenticated {
-                HomeView()
+                MainTabView()
             } else {
                 LoginView()
             }

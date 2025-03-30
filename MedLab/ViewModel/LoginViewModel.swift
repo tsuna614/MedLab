@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 class LoginViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var password: String = ""
@@ -26,22 +27,38 @@ class LoginViewModel: ObservableObject {
             return
         }
         
-        isLoading = true
-        errorMessage = nil
+        self.isLoading = true
+        self.errorMessage = nil
         
-        AuthService.shared.login(email: email, password: password) { result in
-            DispatchQueue.main.async {
-                self.isLoading = false
-                switch result {
-                case .success(let result):
-                    self.appViewModel.setUser(from: result)
+        Task {
+            do {
+                let dictionary = try await AuthService.shared.login(email: email, password: password)
+                if let userDict = dictionary["userData"] as? [String: Any] {
+                    self.appViewModel.setUserFromJSON(from: userDict)
                     self.appViewModel.isAuthenticated = true
+                    self.isLoading = false
                     completion(true)
-                case .failure(let error):
-                    self.errorMessage = error.localizedDescription
-                    completion(false)
                 }
+            } catch {
+                self.errorMessage = error.localizedDescription
+                self.isLoading = false
+                completion(false)
             }
         }
+        
+//        AuthService.shared.login(email: email, password: password) { result in
+//            DispatchQueue.main.async {
+//                self.isLoading = false
+//                switch result {
+//                case .success(let dictionary):
+//                    self.appViewModel.setUserFromJSON(from: dictionary)
+//                    self.appViewModel.isAuthenticated = true
+//                    completion(true)
+//                case .failure(let error):
+//                    self.errorMessage = error.localizedDescription
+//                    completion(false)
+//                }
+//            }
+//        }
     }
 }
