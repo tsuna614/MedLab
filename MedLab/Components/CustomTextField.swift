@@ -11,6 +11,7 @@ struct CustomTextField: View {
     var placeholder: String
     @Binding var text: String
     var isSecure: Bool = false
+    var isNumber: Bool = false
 
     var body: some View {
         Group {
@@ -20,6 +21,7 @@ struct CustomTextField: View {
                 TextField(placeholder, text: $text)
             }
         }
+        .keyboardType(isNumber ? .numberPad : .default)
         .padding()
         .frame(height: 50)
 //        .background(Color(.systemGray6))

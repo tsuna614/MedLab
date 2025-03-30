@@ -17,6 +17,8 @@ class SignupViewModel: ObservableObject {
     @Published var confirmPassword: String = ""
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
+    @Published var number: String = ""
+    @Published var userType: String = ""
     
     private var appViewModel: AppViewModel
     
@@ -31,7 +33,7 @@ class SignupViewModel: ObservableObject {
               !firstName.isEmpty,
               !lastName.isEmpty
         else {
-            errorMessage = "Please enter both fields."
+            errorMessage = "Please enter every required field."
             return
         }
         
@@ -47,7 +49,7 @@ class SignupViewModel: ObservableObject {
             email: email,
             firstName: firstName,
             lastName: lastName,
-            number: nil,
+            number: number.isEmpty ? nil : number,
             userType: nil,
             receiptsId: nil
         )
@@ -64,19 +66,6 @@ class SignupViewModel: ObservableObject {
             }
         }
         
-        //        AuthService.shared.register(user: user, password: password) { result in
-        //            DispatchQueue.main.async {
-        //                self.isLoading = false
-        //                switch result {
-        //                case .success(let result):
-        //                    self.appViewModel.setUserFromJSON(from: result)
-        //                    self.appViewModel.isAuthenticated = true
-        //                    completion(true)
-        //                case .failure(let error):
-        //                    self.errorMessage = error.localizedDescription
-        //                    completion(false)
-        //                }
-        //            }
-        //        }
+        isLoading = false
     }
 }

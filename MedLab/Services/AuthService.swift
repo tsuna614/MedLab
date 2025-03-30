@@ -24,7 +24,21 @@ class AuthService {
         
         request.httpBody = try JSONEncoder().encode(loginData)
         
-        let (data, _) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+        
+        if !(200...299).contains(httpResponse.statusCode) {
+            // Attempt to decode error message from response
+            if let errorDict = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let message = errorDict["msg"] as? String {
+                throw AuthException.serverError(message)
+            } else {
+                throw AuthException.unknown
+            }
+        }
         
         let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
         
@@ -63,7 +77,21 @@ class AuthService {
         
         request.httpBody = try JSONEncoder().encode(payload)
         
-        let (data, _) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+        
+        if !(200...299).contains(httpResponse.statusCode) {
+            // Attempt to decode error message from response
+            if let errorDict = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let message = errorDict["msg"] as? String {
+                throw AuthException.serverError(message)
+            } else {
+                throw AuthException.unknown
+            }
+        }
         
         let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
         
@@ -73,64 +101,6 @@ class AuthService {
         
         return dictionary
     }
-    
-//    func register(user: User, password: String, completion: @escaping (Result<[String: Any], Error>) -> Void) {
-//        guard let url = URL(string: "http://localhost:3000/auth/register") else {
-//            completion(.failure(NSError(domain: "Invalid URL", code: -1)))
-//            return
-//        }
-//        
-//        var request = URLRequest(url: url)
-//        request.httpMethod = "POST"
-//        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-//        
-//        // Create combined payload
-//        let payload = RegisterRequest(
-//            email: user.email,
-//            firstName: user.firstName,
-//            lastName: user.lastName,
-//            number: user.number,
-//            userType: user.userType,
-//            receiptsId: user.receiptsId,
-//            password: password
-//        )
-//        
-//        do {
-//            let jsonData = try JSONEncoder().encode(payload)
-//            request.httpBody = jsonData
-//            
-//            if let jsonString = String(data: jsonData, encoding: .utf8) {
-//                print("Registering with JSON: \(jsonString)")
-//            }
-//            
-//        } catch {
-//            completion(.failure(error))
-//            return
-//        }
-//        
-//        URLSession.shared.dataTask(with: request) { data, response, error in
-//            if let error = error {
-//                completion(.failure(error))
-//                return
-//            }
-//            
-//            guard let data = data else {
-//                completion(.failure(NSError(domain: "No data received", code: -1)))
-//                return
-//            }
-//            
-//            do {
-//                let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
-//                if let dictionary = jsonObject as? [String: Any] {
-//                    completion(.success(dictionary))
-//                } else {
-//                    completion(.failure(NSError(domain: "Invalid JSON structure", code: -1)))
-//                }
-//            } catch {
-//                completion(.failure(error))
-//            }
-//        }.resume()
-//    }
 }
 
 

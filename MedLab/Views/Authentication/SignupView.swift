@@ -28,13 +28,14 @@ struct SignupViewContent: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("Sign Up")
+            Text("Let's get started!")
                 .font(.largeTitle)
                 .bold()
             
             CustomTextField(placeholder: "Email", text: $viewModel.email)
             CustomTextField(placeholder: "First Name", text: $viewModel.firstName)
             CustomTextField(placeholder: "Last Name", text: $viewModel.lastName)
+            CustomTextField(placeholder: "Phone (Not required)", text: $viewModel.number, isNumber: true)
             CustomTextField(placeholder: "Password", text: $viewModel.password, isSecure: true)
             CustomTextField(placeholder: "Confirm password", text: $viewModel.confirmPassword, isSecure: true)
             
