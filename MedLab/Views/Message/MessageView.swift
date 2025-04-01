@@ -9,10 +9,18 @@ import SwiftUI
 
 struct MessageView: View {
     var body: some View {
-        Text("Message View")
+        NavigationStack {
+            VStack(spacing: 0) {
+                TopBar(title: "Message")
+                
+                Spacer()
+                
+                Text("Message View")
+                
+                Spacer()
+            }
+            .navigationTitle("")
+            .navigationBarHidden(true)
+        }
     }
-}
-
-#Preview {
-    MessageView()
 }

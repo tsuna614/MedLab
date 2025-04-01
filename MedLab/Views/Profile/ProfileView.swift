@@ -11,26 +11,27 @@ struct ProfileView: View {
     @EnvironmentObject var appViewModel: AppViewModel
     
     var body: some View {
-        VStack(spacing: 20) {
-            if let user = appViewModel.user {
-                Text("Welcome \(user.firstName.capitalized) \(user.lastName.capitalized)")
+        NavigationStack {
+            VStack(spacing: 20) {
+                TopBar(title: "Profile")
+                
+                UserProfileCard(user: appViewModel.user)
+
+                Spacer()
+                
+                
+                Button("Sign Out") {
+                    appViewModel.signOut()
+                }
+                .padding()
+                .background(Color.red)
+                .foregroundColor(.white)
+                .cornerRadius(8)
+                
+                Spacer()
             }
-            
-            Button("Print user") {
-                print(appViewModel.user!)
-            }
-            
-            Button("Sign Out") {
-                appViewModel.signOut()
-            }
-            .padding()
-            .background(Color.red)
-            .foregroundColor(.white)
-            .cornerRadius(8)
+            .navigationTitle("")
+            .navigationBarHidden(true)
         }
     }
-}
-
-#Preview {
-    ProfileView()
 }

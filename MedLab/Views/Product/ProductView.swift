@@ -9,10 +9,18 @@ import SwiftUI
 
 struct ProductView: View {
     var body: some View {
-        Text("Product View")
+        NavigationStack {
+            VStack(spacing: 0) {
+                TopBar(title: "Product")
+                
+                Spacer()
+                
+                Text("Product View")
+                
+                Spacer()
+            }
+            .navigationTitle("")
+            .navigationBarHidden(true)
+        }
     }
-}
-
-#Preview {
-    ProductView()
 }

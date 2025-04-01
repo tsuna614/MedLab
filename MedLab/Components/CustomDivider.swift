@@ -15,7 +15,3 @@ struct CustomDivider: View {
             .padding()
     }
 }
-
-#Preview {
-    CustomDivider()
-}

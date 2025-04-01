@@ -9,10 +9,18 @@ import SwiftUI
 
 struct OrderView: View {
     var body: some View {
-        Text("Order View")
+        NavigationStack {
+            VStack(spacing: 0) {
+                TopBar(title: "Order")
+                
+                Spacer()
+                
+                Text("Order View")
+                
+                Spacer()
+            }
+            .navigationTitle("")
+            .navigationBarHidden(true)
+        }
     }
-}
-
-#Preview {
-    OrderView()
 }
