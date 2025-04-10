@@ -8,16 +8,39 @@
 import SwiftUI
 
 struct ProductView: View {
+    
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
                 TopBar(title: "Product")
                 
-                Spacer()
-                
-                Text("Product View")
-                
-                Spacer()
+                ScrollView {
+                    VStack(alignment: .leading) {
+                        Text("Categories")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                            .padding([.top, .leading, .trailing])
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 12) {
+                                ForEach(ProductCategory.allCases) { category in
+                                    CategoryCard(width: 160, showingDescription: false, category: category)
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                        
+                        Divider()
+                            .padding(.top)
+                        
+                        Text("Products List")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                            .padding([.top, .leading, .trailing])
+                        
+                        ProductListView()
+                    }
+                }
             }
             .navigationTitle("")
             .navigationBarHidden(true)

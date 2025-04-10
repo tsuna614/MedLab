@@ -8,9 +8,34 @@
 import SwiftUI
 
 struct ProductListView: View {
-    let category: ProductCategory
+    @StateObject var viewModel: ProductViewModel
+    
+    var category: String?
+    
+    init(category: String? = nil) {
+        _viewModel = StateObject(wrappedValue: ProductViewModel(category: category))
+//        viewModel = ProductViewModel(category: category)
+        self.category = category
+    }
+    
+    func loadMoreProducts() {
+        Task { await viewModel.loadMoreProducts() }
+    }
     
     var body: some View {
-        Text("Products List")
+        ScrollView {
+            LazyVStack {
+                ProductGridListView(productViewModel: viewModel, products: viewModel.products)
+                
+                if viewModel.isLoading {
+                    ProgressView()
+                        .padding()
+                }
+            }
+        }
+        .task {
+            await viewModel.loadInitialProducts()
+        }
     }
 }
+

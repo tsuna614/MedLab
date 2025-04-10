@@ -46,6 +46,7 @@ class SignupViewModel: ObservableObject {
         errorMessage = nil
         
         let user = User(
+            id: "",
             email: email,
             firstName: firstName,
             lastName: lastName,
