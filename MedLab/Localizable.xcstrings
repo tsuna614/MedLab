@@ -1,0 +1,116 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+
+    },
+    "%@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      }
+    },
+    "Already have an account? Sign in" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đã có tài khoản? Đăng nhập"
+          }
+        }
+      }
+    },
+    "Brand: %@" : {
+
+    },
+    "Categories" : {
+
+    },
+    "Category: %@" : {
+
+    },
+    "Chat" : {
+
+    },
+    "Checking login..." : {
+
+    },
+    "Don't have an account? Sign up" : {
+
+    },
+    "Expires: %@" : {
+
+    },
+    "Form: %@" : {
+
+    },
+    "Hello" : {
+      "extractionState" : "manual"
+    },
+    "Home" : {
+
+    },
+    "Ingredients:" : {
+
+    },
+    "Instructions:" : {
+
+    },
+    "Let's get started!" : {
+
+    },
+    "Login" : {
+
+    },
+    "Manufacturer: %@" : {
+
+    },
+    "Message View" : {
+
+    },
+    "No product found" : {
+
+    },
+    "Order" : {
+
+    },
+    "Order View" : {
+
+    },
+    "Prescription Required" : {
+
+    },
+    "Product" : {
+
+    },
+    "Product Details" : {
+
+    },
+    "Products List" : {
+
+    },
+    "Profile" : {
+
+    },
+    "Search..." : {
+
+    },
+    "Sign Out" : {
+
+    },
+    "Stock: %lld" : {
+
+    },
+    "Strength: %@" : {
+
+    },
+    "User not found" : {
+
+    }
+  },
+  "version" : "1.0"
+}

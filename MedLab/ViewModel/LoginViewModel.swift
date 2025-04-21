@@ -17,6 +17,7 @@ class LoginViewModel: ObservableObject {
     
     private var appViewModel: AppViewModel
     
+    // MARK: - init
     init(appViewModel: AppViewModel) {
         self.appViewModel = appViewModel
     }

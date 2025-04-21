@@ -13,6 +13,7 @@ class AppViewModel: ObservableObject {
     @Published var isLoading = true
     @Published var user: User?
     
+    // MARK: - init
     init() {
         checkStoredCredentials()
     }

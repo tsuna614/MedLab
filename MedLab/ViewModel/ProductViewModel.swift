@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 class ProductViewModel: ObservableObject {
     @Published var products: [Product] = []
     @Published var isLoading = false
@@ -36,7 +37,7 @@ class ProductViewModel: ObservableObject {
         do {
             let response = try await ProductService.shared.fetchProduct(page: currentPage, limit: limit, category: category)
             products += response.products
-            hasMore = currentPage < response.totalPages
+            hasMore = response.currentPage < response.totalPages
             currentPage += 1
         } catch {
             print("Failed to load products: \(error)")

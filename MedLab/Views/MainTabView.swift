@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @StateObject private var cartViewModel = CartViewModel()
+    
     var body: some View {
         TabView {
             HomeView()
@@ -35,5 +37,6 @@ struct MainTabView: View {
                     Label("Profile", systemImage: "person.crop.circle")
                 }
         }
+        .environmentObject(cartViewModel)
     }
 }

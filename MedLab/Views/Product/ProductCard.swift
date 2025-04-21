@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ProductCard: View {
+    @EnvironmentObject var cartViewModel: CartViewModel
+    @EnvironmentObject var snackbarViewModel: SnackBarViewModel
     let product: Product
     
     var body: some View {
@@ -34,11 +36,41 @@ struct ProductCard: View {
             Text("Stock: \(product.stock)")
                 .font(.caption)
                 .foregroundColor(.secondary)
+            
+            HStack(alignment: .center) {
+                Button {
+                    snackbarViewModel.showSnackbar(message: "\(product.name) added to Cart")
+                    cartViewModel.addProductToCart(product: product)
+                } label: {
+                    Image(systemName: "cart")
+                        .font(.title2)
+                }
+                .padding(8)
+//                .frame(maxHeight: .infinity)
+                .overlay( // Draw on top of the button's frame
+                    RoundedRectangle(cornerRadius: 8) // Create the shape
+                        .stroke(Color.blue, lineWidth: 1.5) // Stroke the outline
+                )
+                
+                Button("Buy Now") {
+                    snackbarViewModel.showSnackbar(message: "You bought \(product.name)")
+                }
+                .padding(10)
+                .frame(maxWidth: .infinity)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(8)
+            }
         }
-        .frame(width: 140)
+//        .frame(width: 160)
+        .frame(maxWidth: .infinity)
         .padding()
         .background(Color(.systemBackground))
         .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
+}
+
+#Preview {
+    ProductCard(product: dummyProducts[0])
 }
