@@ -23,3 +23,13 @@ enum AuthException: Error, LocalizedError {
         }
     }
 }
+
+enum ApiClientError: Error {
+    case invalidURL
+    case networkError(Error) // Wraps underlying network errors (e.g., no connection)
+    case requestFailed(statusCode: Int, data: Data?) // Non-2xx status code
+    case decodingError(Error) // Failed to parse JSON response
+    case encodingError(Error) // Failed to encode request body
+    case authenticationError // Missing or invalid auth token
+    case unknownError
+}

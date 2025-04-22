@@ -42,8 +42,9 @@ struct ProductView: View {
                     }
                 }
             }
-            .navigationTitle("")
+            .navigationTitle("Product")
             .navigationBarHidden(true)
+//            .navigationBarTitleDisplayMode(.inline) // Force title into the compact bar
         }
     }
 }

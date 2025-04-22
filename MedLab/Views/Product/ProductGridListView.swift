@@ -34,7 +34,6 @@ struct ProductGridListView: View {
                     }
                     .padding()
                 }
-                .navigationTitle("Categories")
             }
         }
     }

@@ -30,7 +30,7 @@ struct ProfileView: View {
                 
                 Spacer()
             }
-            .navigationTitle("")
+            .navigationTitle("Profile")
             .navigationBarHidden(true)
         }
     }

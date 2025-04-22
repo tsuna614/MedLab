@@ -17,7 +17,7 @@ struct HomeView: View {
                     CategoryView()
                 }
             }
-            .navigationTitle("")
+            .navigationTitle("Home")
             .navigationBarHidden(true)
         }
     }

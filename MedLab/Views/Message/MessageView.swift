@@ -19,7 +19,7 @@ struct MessageView: View {
                 
                 Spacer()
             }
-            .navigationTitle("")
+            .navigationTitle("Message")
             .navigationBarHidden(true)
         }
     }

@@ -24,7 +24,7 @@ struct OrderView: View {
                 
                 Spacer()
             }
-            .navigationTitle("")
+            .navigationTitle("Order")
             .navigationBarHidden(true)
         }
     }
