@@ -140,6 +140,96 @@ class ApiClient {
         // Return nil to test authentication error path
          return "your_dummy_test_token" // REPLACE THIS
     }
+    
+    func getCart() async throws -> CartResponse {
+            let endpoint = ApiEndpoint.getCart // Use the enum
+
+            // 1. Construct the full URL
+            guard let url = URL(string: endpoint.path, relativeTo: baseURL) else {
+                throw ApiClientError.invalidURL
+            }
+
+            // 2. Create URLRequest
+            var request = URLRequest(url: url)
+            request.httpMethod = endpoint.method
+
+            // 3. Add Headers (including Authorization)
+            request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+            // 4. Get Token and Add Custom Auth Header
+            guard let token = UserDefaultsService.shared.getAccessToken(), !token.isEmpty else {
+                 print("❌ ApiClient: Auth token missing.")
+                throw ApiClientError.authenticationError // Throw specific error
+            }
+            request.setValue(token, forHTTPHeaderField: "x_authorization") // <<< SET HEADER HERE
+            print("ℹ️ ApiClient: Using x_authorization header.")
+
+
+            // 5. Perform the Request
+            let data: Data
+            let response: URLResponse
+            do {
+                print("🚀 Requesting (\(request.httpMethod ?? "")): \(request.url?.absoluteString ?? "Invalid URL")")
+                (data, response) = try await session.data(for: request)
+            } catch let error as URLError {
+                 print("❌ Network Error: \(error.localizedDescription)")
+                throw ApiClientError.networkError(error)
+            } catch {
+                print("❌ Unknown Network Error: \(error)")
+                throw ApiClientError.unknownError
+            }
+
+            // 6. Validate Response Status Code
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("❌ Invalid HTTP Response")
+                throw ApiClientError.unknownError
+            }
+
+            print("✅ Response Status Code: \(httpResponse.statusCode)")
+
+            guard (200...299).contains(httpResponse.statusCode) else {
+                 let responseBody = String(data: data, encoding: .utf8) ?? "No response body"
+                 print("❌ Request Failed (\(httpResponse.statusCode)): \(responseBody)")
+                 // Check specifically for 401 Unauthorized
+                 if httpResponse.statusCode == 401 {
+                     throw ApiClientError.authenticationError // Map 401 to specific error
+                 }
+                throw ApiClientError.requestFailed(statusCode: httpResponse.statusCode, data: data)
+            }
+
+            // 7. Decode Response Body
+            do {
+                 // Print raw response data for debugging if needed
+                 // print("Raw Response Data:\n\(String(data: data, encoding: .utf8) ?? "Could not decode data")")
+                let decodedObject = try jsonDecoder.decode(CartResponse.self, from: data)
+                return decodedObject
+            } catch let error as DecodingError {
+                print("❌ Decoding Error: \(error)")
+                // Log more details from the decoding error if needed
+                 switch error {
+                 case .keyNotFound(let key, let context):
+                     print("Key '\(key)' not found:", context.debugDescription)
+                     print("codingPath:", context.codingPath)
+                 case .valueNotFound(let value, let context):
+                     print("Value '\(value)' not found:", context.debugDescription)
+                     print("codingPath:", context.codingPath)
+                 case .typeMismatch(let type, let context):
+                     print("Type '\(type)' mismatch:", context.debugDescription)
+                     print("codingPath:", context.codingPath)
+                 case .dataCorrupted(let context):
+                     print("Data corrupted:", context.debugDescription)
+                     print("codingPath:", context.codingPath)
+                 @unknown default:
+                     print("Unknown decoding error: \(error.localizedDescription)")
+                 }
+                 print("Attempted to decode response: \(String(data: data, encoding: .utf8) ?? "Invalid UTF-8 data")")
+
+                throw ApiClientError.decodingError(error)
+            } catch {
+                print("❌ Unknown Decoding Error: \(error)")
+                throw ApiClientError.unknownError
+            }
+        }
 }
 
 // Helper struct for requests that expect no response body (e.g., DELETE, 204 No Content)

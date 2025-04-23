@@ -52,14 +52,20 @@ struct ProductCard: View {
                         .stroke(Color.blue, lineWidth: 1.5) // Stroke the outline
                 )
                 
-                Button("Buy Now") {
-                    snackbarViewModel.showSnackbar(message: "You bought \(product.name)")
+                NavigationLink {
+                    // Destination: The view to navigate to
+                    CheckoutView(singleProduct: product)
+                    // Environment objects like CartViewModel are usually inherited automatically
+                    // from the parent navigation context.
+                } label: {
+                    // Label: How the link looks (identical to the old button)
+                    Text("Buy Now") // Or "Proceed to Checkout" if you want to rename
+                        .padding(10)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
                 }
-                .padding(10)
-                .frame(maxWidth: .infinity)
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(8)
             }
         }
 //        .frame(width: 160)

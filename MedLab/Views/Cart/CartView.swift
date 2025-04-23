@@ -173,21 +173,39 @@ struct CartSummaryView: View {
                     .font(.headline)
             }
             
-            Button {
-                // Action for checkout
-                print("Proceed to Checkout tapped!")
-                print("Total Price: \(cartViewModel.totalPrice)")
-                cartViewModel.cartItems.forEach { $0.printCart() } // Use your printCart method
+            //            Button {
+            //                // Action for checkout
+            //                print("Proceed to Checkout tapped!")
+            //                print("Total Price: \(cartViewModel.totalPrice)")
+            //                cartViewModel.cartItems.forEach { $0.printCart() } // Use your printCart method
+            //            } label: {
+            //                Text("Proceed to Checkout")
+            //                    .font(.headline)
+            //                    .frame(maxWidth: .infinity) // Make button wide
+            //            }
+            //            .padding(.vertical, 8)
+            //            .background(Color.blue)
+            //            .foregroundColor(.white)
+            //            .cornerRadius(10)
+            //            .padding(.top) // Add space before button
+            NavigationLink {
+                // Destination View: The view to navigate TO
+                CheckoutView(singleProduct: nil)
+                // Important: Ensure CheckoutView also gets dependencies if needed
+                // e.g., .environmentObject(cartViewModel) if it wasn't already injected higher up
             } label: {
+                // Label: How the navigation link LOOKS (like the old button)
                 Text("Proceed to Checkout")
                     .font(.headline)
-                    .frame(maxWidth: .infinity) // Make button wide
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8) // Apply padding inside the label
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
             }
-            .padding(.vertical, 8)
-            .background(Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(10)
-            .padding(.top) // Add space before button
+            // Disable the link if the cart is empty
+            .disabled(cartViewModel.cartItems.isEmpty)
+            .padding(.top) // Add space before the link/button
             
         }
         .padding() // Padding inside the summary box
