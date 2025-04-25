@@ -26,15 +26,15 @@ enum ApiEndpoint {
         switch self {
         // Cart Paths
         case .getCart:
-            return "/api/cart"
+            return "/carts"
         case .addCartItem:
-            return "/api/cart/items"
+            return "/carts"
         case .updateCartItemQuantity(let productId, _):
-            return "/api/cart/items/\(productId)"
+            return "/carts/items/\(productId)"
         case .removeCartItem(let productId):
-            return "/api/cart/items/\(productId)"
+            return "/carts/items/\(productId)"
         case .clearCart:
-            return "/api/cart"
+            return "/carts"
 
         // Product Paths (NEW)
         case .getProducts:

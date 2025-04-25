@@ -30,13 +30,17 @@ class AppViewModel: ObservableObject {
         
         Task {
             do {
-                user = try await UserService.shared.fetchUser(userId: userId, accessToken: token)
-                isAuthenticated = true
+                let fetchedUser = try await UserService.shared.fetchUser(userId: userId, accessToken: token)
+                self.user = fetchedUser // Store fetched user
+                self.isAuthenticated = true // Mark as authenticated
+                print("AppViewModel: User authenticated via stored credentials. User: \(fetchedUser.email)")
             } catch {
-                print("Fetch user failed: \(error.localizedDescription)")
-                isAuthenticated = false
+                print("❌ AppViewModel: Fetch user with stored credentials failed: \(error.localizedDescription)")
+                self.isAuthenticated = false
+                self.user = nil // Clear user data on failure
+                UserDefaultsService.shared.clearSession() // Clear invalid stored session
             }
-            isLoading = false
+            self.isLoading = false
         }
     }
     
@@ -44,7 +48,9 @@ class AppViewModel: ObservableObject {
         if let jsonData = try? JSONSerialization.data(withJSONObject: dictionary),
            let decodedUser = try? JSONDecoder().decode(User.self, from: jsonData) {
             self.user = decodedUser
-        }
+        } else {
+            print("⚠️ AppViewModel: Failed to decode user from dictionary.")
+       }
     }
     
     func signOut() {

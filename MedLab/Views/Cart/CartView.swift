@@ -59,7 +59,9 @@ struct CartView: View {
         let itemToDelete = offsets.map { cartViewModel.cartItems[$0] }
         // Call the ViewModel's remove method for each identified product
         itemToDelete.forEach { item in
-            cartViewModel.removeItem(item: item)
+            Task {
+                await cartViewModel.removeItem(productId: item.product.id)
+            }
         }
     }
 }
@@ -109,7 +111,9 @@ struct CartItemRow: View {
                 // Quantity Controls
                 HStack {
                     Button {
-                        cartViewModel.decreaseQuantity(for: item.product)
+                        Task {
+                            await cartViewModel.decreaseQuantity(for: item.product)
+                        }
                     } label: {
                         Image(systemName: "minus.circle")
                             .foregroundColor(currentQuantity > 1 ? .blue : .gray) // Indicate disabled state
@@ -121,7 +125,10 @@ struct CartItemRow: View {
                         .frame(minWidth: 25, alignment: .center) // Ensure space
                     
                     Button {
-                        cartViewModel.increaseQuantity(for: item.product)
+                        Task {
+                            await cartViewModel.increaseQuantity(for: item.product)
+                            
+                        }
                     } label: {
                         Image(systemName: "plus.circle")
                             .foregroundColor(.blue)

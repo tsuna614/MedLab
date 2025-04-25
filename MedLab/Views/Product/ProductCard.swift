@@ -39,8 +39,10 @@ struct ProductCard: View {
             
             HStack(alignment: .center) {
                 Button {
-                    snackbarViewModel.showSnackbar(message: "\(product.name) added to Cart")
-                    cartViewModel.addProductToCart(product: product)
+                    Task {
+                        snackbarViewModel.showSnackbar(message: "\(product.name) added to Cart")
+                        await cartViewModel.addProductToCart(product: product)
+                    }
                 } label: {
                     Image(systemName: "cart")
                         .font(.title2)

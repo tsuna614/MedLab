@@ -24,6 +24,7 @@ struct LoginView: View {
 
 struct LoginViewContent: View {
     @ObservedObject var viewModel: LoginViewModel
+    @EnvironmentObject var cartViewModel: CartViewModel
     
     var body: some View {
         NavigationStack {
@@ -48,7 +49,9 @@ struct LoginViewContent: View {
                 } else {
                     Button("Login") {
                         viewModel.login { success in
-                            
+                            Task {
+                                await cartViewModel.fetchCart()
+                            }
                         }
                     }
                     .padding()

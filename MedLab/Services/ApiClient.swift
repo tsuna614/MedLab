@@ -7,47 +7,39 @@
 
 import Foundation
 
-class ApiClient {
-
-    // Base URL for your backend API
+class ApiClient: ObservableObject {
+    // Base URL for your API (e.g., "http://localhost:3000")
     private let baseURL: URL
-
-    // Shared URLSession instance
     private let session: URLSession
-
-    // Used for encoding request bodies and decoding responses
     private let jsonEncoder = JSONEncoder()
-    private let jsonDecoder = JSONDecoder()
+    private let jsonDecoder = JSONDecoder() // Configure date/key decoding strategies if needed
 
-    // --- Initialization ---
     init(baseURLString: String, session: URLSession = .shared) {
         guard let url = URL(string: baseURLString) else {
-            fatalError("Invalid base URL string provided.") // Or handle more gracefully
+            fatalError("Invalid base URL string provided.")
         }
         self.baseURL = url
         self.session = session
-        // Configure decoder/encoder if needed (e.g., date strategies)
+        // Example: Configure decoder if your API uses different date formats
         // jsonDecoder.dateDecodingStrategy = .iso8601
     }
 
-    // --- Generic Request Function ---
-    /// Performs a network request.
+    /// Generic function to make API requests.
     /// - Parameters:
-    ///   - endpoint: The ApiEndpoint defining the path and method.
-    ///   - body: An optional Encodable object to send as the request body.
-    ///   - responseType: The Decodable type expected for a successful response.
-    ///   - requiresAuth: Whether an authentication token is needed.
-    /// - Returns: An instance of the `responseType`.
-    /// - Throws: An `ApiClientError` if the request fails.
+    ///   - endpoint: The ApiEndpoint case defining path and method.
+    ///   - body: An optional Encodable object to send as the request body (for POST, PUT, etc.).
+    ///   - responseType: The Decodable type expected in the response body on success.
+    /// - Returns: The decoded object of type T.
+    /// - Throws: ApiClientError for various request/response issues.
     func request<T: Decodable, B: Encodable>(
         endpoint: ApiEndpoint,
         body: B? = nil, // Make body optional and generic
-        responseType: T.Type = T.self, // Default to inferring T
-        requiresAuth: Bool = true
+        responseType: T.Type
     ) async throws -> T {
 
-        // 1. Construct the full URL
+        // 1. Construct URL
         guard let url = URL(string: endpoint.path, relativeTo: baseURL) else {
+            print("❌ ApiClient: Failed to create URL for path \(endpoint.path)")
             throw ApiClientError.invalidURL
         }
 
@@ -55,182 +47,176 @@ class ApiClient {
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method
 
-        // 3. Add Headers
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        // 3. Set Common Headers
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-        // 4. Add Authentication (Placeholder - Implement actual token retrieval)
-        if requiresAuth {
-            guard let token = getAuthToken() else { // Replace with your token logic
-                throw ApiClientError.authenticationError
-            }
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        if body != nil { // Only set Content-Type if there's a body
+             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         }
 
+
+        // 4. Add Authorization Header (CRUCIAL)
+        // Fetch token ONLY if the endpoint requires authentication (you might add a flag to ApiEndpoint)
+        // For simplicity here, we assume most endpoints need it. Refine as needed.
+        if let token = UserDefaultsService.shared.getAccessToken(), !token.isEmpty {
+             request.setValue(token, forHTTPHeaderField: "x_authorization")
+            // print("ℹ️ ApiClient: Added x_authorization header.")
+        } else {
+            // Decide how to handle missing token for protected routes.
+            // Could throw immediately or let the server return 401.
+            // Throwing early can be clearer.
+            print("⚠️ ApiClient: No access token found for potentially protected route \(endpoint.path)")
+             // Consider throwing ApiClientError.authenticationError here if endpoint requires auth
+        }
+
+
         // 5. Encode Request Body (if provided)
-        if let body = body {
+        if let requestBody = body {
             do {
-                request.httpBody = try jsonEncoder.encode(body)
-            } catch {
+                request.httpBody = try jsonEncoder.encode(requestBody)
+                // Optional: Print request body for debugging
+                // if let bodyString = String(data: request.httpBody!, encoding: .utf8) {
+                //      print("ℹ️ Request Body: \(bodyString)")
+                // }
+            } catch let error as EncodingError {
+                print("❌ ApiClient: Failed to encode request body - \(error)")
                 throw ApiClientError.encodingError(error)
             }
         }
 
-        // 6. Perform the Request
+        // 6. Perform Network Request
         let data: Data
         let response: URLResponse
+        print("🚀 Requesting (\(request.httpMethod ?? "")): \(request.url?.absoluteString ?? "Invalid URL")")
         do {
-            print("🚀 Requesting (\(request.httpMethod ?? "")): \(request.url?.absoluteString ?? "Invalid URL")")
             (data, response) = try await session.data(for: request)
         } catch let error as URLError {
-             print("❌ Network Error: \(error.localizedDescription)")
-            // Handle specific URLErrors if needed (e.g., .notConnectedToInternet)
+            print("❌ Network Error: \(error.code) - \(error.localizedDescription)")
             throw ApiClientError.networkError(error)
         } catch {
             print("❌ Unknown Network Error: \(error)")
             throw ApiClientError.unknownError
         }
 
-
         // 7. Validate Response Status Code
         guard let httpResponse = response as? HTTPURLResponse else {
-            print("❌ Invalid HTTP Response")
-            throw ApiClientError.unknownError // Should not happen with http requests
+            print("❌ Invalid HTTP Response received.")
+            throw ApiClientError.unknownError
         }
 
         print("✅ Response Status Code: \(httpResponse.statusCode)")
 
         guard (200...299).contains(httpResponse.statusCode) else {
-             print("❌ Request Failed (\(httpResponse.statusCode)): \(String(data: data, encoding: .utf8) ?? "No Data")")
+            let responseBodyString = String(data: data, encoding: .utf8) ?? "No response body"
+            print("❌ Request Failed (\(httpResponse.statusCode)): \(responseBodyString)")
+            if httpResponse.statusCode == 401 {
+                // Specific handling for unauthorized
+                // Could trigger logout flow, refresh token logic, etc.
+                print("Authentication Error (401). Token may be invalid or expired.")
+                throw ApiClientError.authenticationError
+            }
+            // Throw general failure for other non-2xx codes
             throw ApiClientError.requestFailed(statusCode: httpResponse.statusCode, data: data)
         }
 
-        // 8. Decode Response Body (if expected)
-        // Handle empty responses (e.g., for DELETE or status 204)
-        if T.self == EmptyResponse.self || data.isEmpty {
-             guard let empty = EmptyResponse() as? T else {
-                 // This should ideally not happen if T is EmptyResponse
-                 throw ApiClientError.decodingError(DecodingError.typeMismatch(T.self, DecodingError.Context(codingPath: [], debugDescription: "Expected EmptyResponse but type mismatch")))
-             }
-             return empty
-         }
+        // Handle 204 No Content specifically (common for DELETE)
+        if httpResponse.statusCode == 204 || data.isEmpty {
+             // If the expected response type T can handle being empty (e.g., an optional or a specific "success" type)
+             // This requires careful handling based on what T is.
+             // A common approach is to have specific functions for DELETE that don't expect a body.
+             // For this generic function, if T expects data, decoding empty data will fail.
+             // Let's assume for now that if T is expected, we need data.
+            guard T.self != EmptyResponse.self else { // Check if expecting EmptyResponse specifically
+                // swiftlint:disable:next force_cast
+                return EmptyResponse() as! T // Return dummy EmptyResponse if that's expected
+            }
+             // If data is empty but T expects something, it's likely a decoding error will occur below, which is okay.
+             print("⚠️ Response body is empty (Status Code \(httpResponse.statusCode)). Decoding might fail if response type expects data.")
+        }
 
 
+        // 8. Decode Response Body
         do {
             let decodedObject = try jsonDecoder.decode(T.self, from: data)
             return decodedObject
         } catch let error as DecodingError {
-            print("❌ Decoding Error: \(error)")
-            // Log more details from the decoding error if needed
-            // print(String(data: data, encoding: .utf8) ?? "Could not print response data")
+             // Provide detailed decoding error information
+            print("❌ Decoding Error: \(error.localizedDescription)")
+            logDecodingError(error, data: data)
             throw ApiClientError.decodingError(error)
         } catch {
-            print("❌ Unknown Decoding Error: \(error)")
+            print("❌ Unknown error during decoding: \(error)")
             throw ApiClientError.unknownError
         }
     }
-
-    // --- Placeholder for Authentication ---
-    // Replace this with your actual mechanism to securely retrieve the user's auth token
-    private func getAuthToken() -> String? {
-        // Example: Retrieve from Keychain, UserDefaults (less secure), or an Auth Service
-        // For testing: return "your_dummy_test_token"
-        // In production: return SecureStorage.shared.getAuthToken() // Or similar
-        print("⚠️ WARNING: Using placeholder getAuthToken(). Implement actual token retrieval.")
-        // Return nil to test authentication error path
-         return "your_dummy_test_token" // REPLACE THIS
-    }
     
-    func getCart() async throws -> CartResponse {
-            let endpoint = ApiEndpoint.getCart // Use the enum
+//    func request<T: Decodable>(
+//        endpoint: ApiEndpoint,
+//        responseType: T.Type
+//    ) async throws -> T {
+//        // ... (Implementation is similar but omits body encoding and Content-Type header) ...
+//        // 1. Construct URL
+//        guard let url = URL(string: endpoint.path, relativeTo: baseURL) else { throw ApiClientError.invalidURL }
+//        // 2. Create Request
+//        var request = URLRequest(url: url)
+//        request.httpMethod = endpoint.method
+//        // 3. Set Headers (Accept only)
+//        request.setValue("application/json", forHTTPHeaderField: "Accept")
+//        // 4. Add Auth Header
+//        if let token = UserDefaultsService.shared.getAccessToken(), !token.isEmpty {
+//            request.setValue(token, forHTTPHeaderField: "x_authorization")
+//        } else { /* Handle missing token */ }
+//        // 5. NO BODY ENCODING
+//        // 6. Perform Request
+//        // ... (rest of request, validation, decoding logic - same as above) ...
+//        // Again, factor out common logic.
+//         print("🚀 Requesting (\(request.httpMethod ?? "")): \(request.url?.absoluteString ?? "Invalid URL")")
+//         let (data, response) = try await session.data(for: request) // Placeholder
+//         guard let httpResponse = response as? HTTPURLResponse else { throw ApiClientError.unknownError }
+//         print("✅ Response Status Code: \(httpResponse.statusCode)")
+//         guard (200...299).contains(httpResponse.statusCode) else {
+//             let responseBodyString = String(data: data, encoding: .utf8) ?? "No response body"
+//             print("❌ Request Failed (\(httpResponse.statusCode)): \(responseBodyString)")
+//             if httpResponse.statusCode == 401 { throw ApiClientError.authenticationError }
+//             throw ApiClientError.requestFailed(statusCode: httpResponse.statusCode, data: data)
+//         }
+//          if httpResponse.statusCode == 204 || data.isEmpty {
+//             guard T.self != EmptyResponse.self else { return EmptyResponse() as! T }
+//              // Potentially throw if data is empty but T isn't EmptyResponse
+//              // throw ApiClientError.decodingError(...) // Or let decode fail below
+//         }
+//         do {
+//             let decodedObject = try jsonDecoder.decode(T.self, from: data)
+//             return decodedObject
+//         } catch let error as DecodingError {
+//             print("❌ Decoding Error: \(error.localizedDescription)")
+//             logDecodingError(error, data: data) // Use your logging helper
+//             throw ApiClientError.decodingError(error)
+//         }
+//    }
 
-            // 1. Construct the full URL
-            guard let url = URL(string: endpoint.path, relativeTo: baseURL) else {
-                throw ApiClientError.invalidURL
-            }
-
-            // 2. Create URLRequest
-            var request = URLRequest(url: url)
-            request.httpMethod = endpoint.method
-
-            // 3. Add Headers (including Authorization)
-            request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-            // 4. Get Token and Add Custom Auth Header
-            guard let token = UserDefaultsService.shared.getAccessToken(), !token.isEmpty else {
-                 print("❌ ApiClient: Auth token missing.")
-                throw ApiClientError.authenticationError // Throw specific error
-            }
-            request.setValue(token, forHTTPHeaderField: "x_authorization") // <<< SET HEADER HERE
-            print("ℹ️ ApiClient: Using x_authorization header.")
-
-
-            // 5. Perform the Request
-            let data: Data
-            let response: URLResponse
-            do {
-                print("🚀 Requesting (\(request.httpMethod ?? "")): \(request.url?.absoluteString ?? "Invalid URL")")
-                (data, response) = try await session.data(for: request)
-            } catch let error as URLError {
-                 print("❌ Network Error: \(error.localizedDescription)")
-                throw ApiClientError.networkError(error)
-            } catch {
-                print("❌ Unknown Network Error: \(error)")
-                throw ApiClientError.unknownError
-            }
-
-            // 6. Validate Response Status Code
-            guard let httpResponse = response as? HTTPURLResponse else {
-                print("❌ Invalid HTTP Response")
-                throw ApiClientError.unknownError
-            }
-
-            print("✅ Response Status Code: \(httpResponse.statusCode)")
-
-            guard (200...299).contains(httpResponse.statusCode) else {
-                 let responseBody = String(data: data, encoding: .utf8) ?? "No response body"
-                 print("❌ Request Failed (\(httpResponse.statusCode)): \(responseBody)")
-                 // Check specifically for 401 Unauthorized
-                 if httpResponse.statusCode == 401 {
-                     throw ApiClientError.authenticationError // Map 401 to specific error
-                 }
-                throw ApiClientError.requestFailed(statusCode: httpResponse.statusCode, data: data)
-            }
-
-            // 7. Decode Response Body
-            do {
-                 // Print raw response data for debugging if needed
-                 // print("Raw Response Data:\n\(String(data: data, encoding: .utf8) ?? "Could not decode data")")
-                let decodedObject = try jsonDecoder.decode(CartResponse.self, from: data)
-                return decodedObject
-            } catch let error as DecodingError {
-                print("❌ Decoding Error: \(error)")
-                // Log more details from the decoding error if needed
-                 switch error {
-                 case .keyNotFound(let key, let context):
-                     print("Key '\(key)' not found:", context.debugDescription)
-                     print("codingPath:", context.codingPath)
-                 case .valueNotFound(let value, let context):
-                     print("Value '\(value)' not found:", context.debugDescription)
-                     print("codingPath:", context.codingPath)
-                 case .typeMismatch(let type, let context):
-                     print("Type '\(type)' mismatch:", context.debugDescription)
-                     print("codingPath:", context.codingPath)
-                 case .dataCorrupted(let context):
-                     print("Data corrupted:", context.debugDescription)
-                     print("codingPath:", context.codingPath)
-                 @unknown default:
-                     print("Unknown decoding error: \(error.localizedDescription)")
-                 }
-                 print("Attempted to decode response: \(String(data: data, encoding: .utf8) ?? "Invalid UTF-8 data")")
-
-                throw ApiClientError.decodingError(error)
-            } catch {
-                print("❌ Unknown Decoding Error: \(error)")
-                throw ApiClientError.unknownError
-            }
-        }
+    // Helper for more detailed decoding error logs
+    private func logDecodingError(_ error: DecodingError, data: Data) {
+         switch error {
+         case .keyNotFound(let key, let context):
+             print("  Key '\(key.stringValue)' not found at path: \(context.codingPath.map { $0.stringValue }.joined(separator: "."))")
+             print("  Debug Description:", context.debugDescription)
+         case .valueNotFound(let type, let context):
+             print("  Value of type '\(type)' not found at path: \(context.codingPath.map { $0.stringValue }.joined(separator: "."))")
+             print("  Debug Description:", context.debugDescription)
+         case .typeMismatch(let type, let context):
+             print("  Type '\(type)' mismatch at path: \(context.codingPath.map { $0.stringValue }.joined(separator: "."))")
+             print("  Debug Description:", context.debugDescription)
+         case .dataCorrupted(let context):
+             print("  Data corrupted at path: \(context.codingPath.map { $0.stringValue }.joined(separator: "."))")
+             print("  Debug Description:", context.debugDescription)
+         @unknown default:
+             print("  Unknown decoding error: \(error.localizedDescription)")
+         }
+         print("  Attempted to decode response: \(String(data: data, encoding: .utf8) ?? "Invalid UTF-8 data")")
+     }
 }
 
-// Helper struct for requests that expect no response body (e.g., DELETE, 204 No Content)
-struct EmptyResponse: Codable {}
+// Define an empty struct for endpoints that return no body (like 204 No Content)
+struct EmptyResponse: Decodable {}
+
+struct EmptyBody: Encodable {}

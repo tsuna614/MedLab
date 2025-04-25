@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var appViewModel: AppViewModel
+    @EnvironmentObject var cartViewModel: CartViewModel
     
     var body: some View {
         NavigationStack {
@@ -21,6 +22,7 @@ struct ProfileView: View {
                 
                 
                 Button("Sign Out") {
+                    cartViewModel.clearLocalCartData()
                     appViewModel.signOut()
                 }
                 .padding()
