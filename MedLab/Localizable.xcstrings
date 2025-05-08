@@ -1,8 +1,15 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "" : {
-
+    "%@\n%@\n%@, %@ %@\n%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@\n%2$@\n%3$@, %4$@ %5$@\n%6$@"
+          }
+        }
+      }
     },
     "%@ %@" : {
       "localizations" : {
@@ -13,6 +20,22 @@
           }
         }
       }
+    },
+    "%@, %@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@, %2$@ %3$@"
+          }
+        }
+      }
+    },
+    "%lld" : {
+
+    },
+    "Add some products to get started!" : {
+
     },
     "Already have an account? Sign in" : {
       "localizations" : {
@@ -27,6 +50,9 @@
     "Brand: %@" : {
 
     },
+    "Buy Now" : {
+
+    },
     "Categories" : {
 
     },
@@ -39,7 +65,31 @@
     "Checking login..." : {
 
     },
+    "Checkout" : {
+
+    },
+    "Confirmation" : {
+
+    },
+    "Counter: %lld" : {
+
+    },
+    "Decrement" : {
+
+    },
     "Don't have an account? Sign up" : {
+
+    },
+    "Done" : {
+
+    },
+    "Error Loading Orders" : {
+
+    },
+    "Error: Order details not available." : {
+
+    },
+    "Estimated Tax" : {
 
     },
     "Expires: %@" : {
@@ -54,10 +104,16 @@
     "Home" : {
 
     },
+    "Increment" : {
+
+    },
     "Ingredients:" : {
 
     },
     "Instructions:" : {
+
+    },
+    "Items (%lld)" : {
 
     },
     "Let's get started!" : {
@@ -69,19 +125,58 @@
     "Manufacturer: %@" : {
 
     },
+    "Message" : {
+
+    },
     "Message View" : {
+
+    },
+    "My Orders" : {
+
+    },
+    "No Orders Yet" : {
 
     },
     "No product found" : {
 
     },
+    "OK" : {
+
+    },
     "Order" : {
 
     },
-    "Order View" : {
+    "Order #%@" : {
+
+    },
+    "Order Details" : {
+
+    },
+    "Order Error" : {
+
+    },
+    "Order Placed!" : {
+
+    },
+    "Order Summary" : {
+
+    },
+    "Payment Method" : {
+
+    },
+    "Place Order - %@" : {
+
+    },
+    "Placed on %@" : {
+
+    },
+    "Placing Order..." : {
 
     },
     "Prescription Required" : {
+
+    },
+    "Proceed to Checkout" : {
 
     },
     "Product" : {
@@ -96,7 +191,22 @@
     "Profile" : {
 
     },
+    "Qty: %lld" : {
+
+    },
+    "Retry" : {
+
+    },
     "Search..." : {
+
+    },
+    "Shipping" : {
+
+    },
+    "Shipping Address" : {
+
+    },
+    "Shopping Cart" : {
 
     },
     "Sign Out" : {
@@ -108,7 +218,37 @@
     "Strength: %@" : {
 
     },
+    "Subtotal" : {
+
+    },
+    "Subtotal (%lld items)" : {
+
+    },
+    "Subtotal (1 items)" : {
+
+    },
+    "Tax" : {
+
+    },
+    "Total" : {
+
+    },
+    "Track Package: %@" : {
+
+    },
     "User not found" : {
+
+    },
+    "View Order Details" : {
+
+    },
+    "Your Cart is Empty" : {
+
+    },
+    "Your order #%@ has been confirmed." : {
+
+    },
+    "Your past orders will appear here." : {
 
     }
   },

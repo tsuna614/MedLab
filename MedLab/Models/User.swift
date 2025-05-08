@@ -7,6 +7,14 @@
 
 import Foundation
 
+struct Address: Codable {
+    let street: String
+    let city: String
+    let state: String
+    let postalCode: String
+    let country: String
+}
+
 struct User: Codable {
     let id: String
     let email: String
@@ -15,6 +23,7 @@ struct User: Codable {
     let number: String?
     let userType: String?
     let receiptsId: [String]?
+    let address: Address?
     
     enum CodingKeys: String, CodingKey {
         case id = "_id" // because the id from JSON field name is "_id"
@@ -24,5 +33,6 @@ struct User: Codable {
         case number
         case userType
         case receiptsId
+        case address
     }
 }

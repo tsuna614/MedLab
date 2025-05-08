@@ -52,7 +52,8 @@ class SignupViewModel: ObservableObject {
             lastName: lastName,
             number: number.isEmpty ? nil : number,
             userType: nil,
-            receiptsId: nil
+            receiptsId: nil,
+            address: nil
         )
         
         Task {

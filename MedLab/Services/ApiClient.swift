@@ -8,11 +8,10 @@
 import Foundation
 
 class ApiClient: ObservableObject {
-    // Base URL for your API (e.g., "http://localhost:3000")
     private let baseURL: URL
     private let session: URLSession
     private let jsonEncoder = JSONEncoder()
-    private let jsonDecoder = JSONDecoder() // Configure date/key decoding strategies if needed
+    private let jsonDecoder: JSONDecoder
 
     init(baseURLString: String, session: URLSession = .shared) {
         guard let url = URL(string: baseURLString) else {
@@ -20,8 +19,26 @@ class ApiClient: ObservableObject {
         }
         self.baseURL = url
         self.session = session
-        // Example: Configure decoder if your API uses different date formats
-        // jsonDecoder.dateDecodingStrategy = .iso8601
+        
+        // *** CONFIGURE THE DECODER WITH CUSTOM ISO8601 PARSING ***
+        self.jsonDecoder = JSONDecoder()
+        
+        let isoFormatter = ISO8601DateFormatter()
+        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        
+        self.jsonDecoder.dateDecodingStrategy = .custom({ decoder -> Date in
+            let container = try decoder.singleValueContainer()
+            let dateString = try container.decode(String.self)
+            
+            if let date = isoFormatter.date(from: dateString) {
+                return date
+            }
+            
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Cannot decode date string \(dateString) as ISO8601.")
+        })
+        // *** END CUSTOM CONFIGURATION ***
+        
+        print("ApiClient: JSONDecoder configured with CUSTOM ISO8601 date strategy.")
     }
 
     /// Generic function to make API requests.
@@ -38,7 +55,10 @@ class ApiClient: ObservableObject {
     ) async throws -> T {
 
         // 1. Construct URL
-        guard let url = URL(string: endpoint.path, relativeTo: baseURL) else {
+        var components = URLComponents(url: baseURL.appendingPathComponent(endpoint.path), resolvingAgainstBaseURL: false)
+        components?.queryItems = endpoint.queryItems
+        
+        guard let url = components?.url else {
             print("❌ ApiClient: Failed to create URL for path \(endpoint.path)")
             throw ApiClientError.invalidURL
         }

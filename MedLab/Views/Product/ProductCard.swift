@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProductCard: View {
     @EnvironmentObject var cartViewModel: CartViewModel
+    @EnvironmentObject var appViewModel: AppViewModel
     @EnvironmentObject var snackbarViewModel: SnackBarViewModel
     let product: Product
     
@@ -55,8 +56,7 @@ struct ProductCard: View {
                 )
                 
                 NavigationLink {
-                    // Destination: The view to navigate to
-                    CheckoutView(singleProduct: product)
+                    CheckoutView()
                     // Environment objects like CartViewModel are usually inherited automatically
                     // from the parent navigation context.
                 } label: {
@@ -77,8 +77,4 @@ struct ProductCard: View {
         .cornerRadius(12)
         .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
-}
-
-#Preview {
-    ProductCard(product: dummyProducts[0])
 }

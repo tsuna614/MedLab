@@ -9,23 +9,43 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var appViewModel = AppViewModel()
-    @StateObject var snackbarViewModel = SnackBarViewModel()
-    @StateObject private var apiClient = ApiClient(baseURLString: "http://localhost:3000") // Use your actual URL
-    @StateObject private var cartService: CartService // Declare type
+    @StateObject var snackbarViewModel = SnackBarViewModel() // Assuming global snackbar needed
+    
+    // --- Dependencies (Create instances once) ---
+    @StateObject private var apiClient: ApiClient
+    @StateObject private var cartService: CartService
+    @StateObject private var orderService: OrderService // Added OrderService
+    
+    // --- ViewModels (Depend on Services) ---
     @StateObject private var cartViewModel: CartViewModel
+    @StateObject private var orderViewModel: OrderViewModel // Added OrderViewModel
+
     
     init() {
-        // Create the ApiClient first (or receive it)
-        let apiClientInstance = ApiClient(baseURLString: "http://localhost:3000") // Or retrieve existing instance
-        // Now create the services that DEPEND on the apiClient
-        let cartServiceInstance = CartService(apiClient: apiClientInstance)
-        // Now create the ViewModels that DEPEND on the services
-        _cartService = StateObject(wrappedValue: cartServiceInstance) // Initialize StateObject correctly
-        _cartViewModel = StateObject(wrappedValue: CartViewModel(cartService: cartServiceInstance)) // Inject service
-        _apiClient = StateObject(wrappedValue: apiClientInstance) // Only if ContentView truly owns ApiClient lifecycle
+        // Api client
+        let apiClientInstance = ApiClient(baseURLString: "http://localhost:3000")
         
-        // Alternatively, if App struct owns ApiClient/Services:
-        // You might pass cartService into ContentView's init instead of creating here.
+        // Services
+        let cartServiceInstance = CartService(apiClient: apiClientInstance)
+        let orderServiceInstance = OrderService(apiClient: apiClientInstance)
+
+        // Initialize the @StateObject wrappers for services
+        _cartService = StateObject(wrappedValue: cartServiceInstance)
+        _orderService = StateObject(wrappedValue: orderServiceInstance)
+        _apiClient = StateObject(wrappedValue: apiClientInstance)
+        
+        // Create VM instance
+        let appVMInstance = AppViewModel()
+        let cartVMInstance = CartViewModel(cartService: cartServiceInstance)
+        
+        // View Models
+        _appViewModel = StateObject(wrappedValue: appVMInstance) // Initialize its wrapper
+        _cartViewModel = StateObject(wrappedValue: cartVMInstance)
+        _orderViewModel = StateObject(wrappedValue: OrderViewModel(
+            orderService: orderServiceInstance,
+            cartViewModel: cartVMInstance,
+            appViewModel: appVMInstance
+        ))
     }
     
     var body: some View {
@@ -50,6 +70,7 @@ struct ContentView: View {
         }
         .environmentObject(appViewModel)
         .environmentObject(cartViewModel)
+        .environmentObject(orderViewModel)
         .environmentObject(snackbarViewModel)
     }
 }

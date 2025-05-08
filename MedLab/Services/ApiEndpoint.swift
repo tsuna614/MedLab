@@ -16,10 +16,12 @@ enum ApiEndpoint {
     case clearCart
 
     // Product Endpoints (NEW)
-    case getProducts // Fetch a list of products (could add params for filtering/pagination later)
+    case getProducts(page: Int?, limit: Int?, category: String?)
     case getProductDetail(productId: String) // Fetch details for one product
 
     // Add other endpoints as needed (e.g., auth, orders)
+    case getOrders
+    case createOrder(orderData: CreateOrderRequest)
 
     // Computed properties to define path and method
     var path: String {
@@ -38,31 +40,62 @@ enum ApiEndpoint {
 
         // Product Paths (NEW)
         case .getProducts:
-            return "/api/products" // Standard path for listing resources
+            return "/products" // Standard path for listing resources
         case .getProductDetail(let productId):
-            return "/api/products/\(productId)" // Standard path for a specific resource
+            return "/products/\(productId)" // Standard path for a specific resource
+            
+        // Order Paths
+        case .getOrders, .createOrder:
+            return "/orders"
         }
+        
     }
 
     var method: String {
         switch self {
         // Cart Methods
-        case .getCart:
+        case .getCart, .getProductDetail, .getProducts, .getOrders:
             return "GET"
-        case .addCartItem:
+        case .addCartItem, .createOrder:
             return "POST"
         case .updateCartItemQuantity:
             return "PUT"
-        case .removeCartItem:
+        case .removeCartItem, .clearCart:
             return "DELETE"
-        case .clearCart:
-            return "DELETE"
-
-        // Product Methods (NEW)
-        case .getProducts:
-            return "GET" // Fetching lists is usually GET
-        case .getProductDetail:
-            return "GET" // Fetching a specific item is usually GET
+        }
+    }
+    
+    var queryItems: [URLQueryItem]? {
+        switch self {
+        case .getProducts(let page, let limit, let category):
+            var items: [URLQueryItem] = []
+            if let page = page { items.append(URLQueryItem(name: "page", value: String(page))) }
+            if let limit = limit { items.append(URLQueryItem(name: "limit", value: String(limit))) }
+            if let category = category, !category.isEmpty { items.append(URLQueryItem(name: "category", value: category)) }
+//            if let searchTerm = searchTerm, !searchTerm.isEmpty { items.append(URLQueryItem(name: "search", value: searchTerm)) } // Assuming "search" is the query param name
+            return items.isEmpty ? nil : items
+        default:
+            return nil
+        }
+    }
+    
+    var requiresAuth: Bool {
+        switch self {
+        case
+            //                .login,
+            //                .refreshToken,
+                .getProducts,
+                .getProductDetail:
+            return false
+            
+        case .getCart,
+                .addCartItem,
+                .updateCartItemQuantity,
+                .removeCartItem,
+                .clearCart,
+                .getOrders,
+                .createOrder:
+            return true
         }
     }
 }

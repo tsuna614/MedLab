@@ -151,6 +151,7 @@ struct CartItemRow: View {
 
 struct CartSummaryView: View {
     @EnvironmentObject var cartViewModel: CartViewModel
+    @EnvironmentObject var appViewModel: AppViewModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -196,8 +197,7 @@ struct CartSummaryView: View {
             //            .cornerRadius(10)
             //            .padding(.top) // Add space before button
             NavigationLink {
-                // Destination View: The view to navigate TO
-                CheckoutView(singleProduct: nil)
+                CheckoutView()
                 // Important: Ensure CheckoutView also gets dependencies if needed
                 // e.g., .environmentObject(cartViewModel) if it wasn't already injected higher up
             } label: {

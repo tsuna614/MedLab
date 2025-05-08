@@ -7,9 +7,79 @@
 
 import SwiftUI
 
+//struct OrderView: View {
+//    // *** CHANGE THIS: Use @EnvironmentObject to get the SHARED instance ***
+//    @EnvironmentObject var orderViewModel: OrderViewModel
+//    // *** REMOVE: @StateObject private var orderViewModel = OrderViewModel() ***
+//
+//    var body: some View {
+//        // Use NavigationStack for modern navigation
+//        NavigationStack {
+//            ZStack { // Use ZStack for overlaying ProgressView
+//                // Main List Content
+//                List {
+//                    // Check if orders are loaded and not empty (Using the SHARED orderViewModel)
+//                    if !orderViewModel.isLoadingList && !orderViewModel.orders.isEmpty { // Use isLoadingList
+//                        ForEach(orderViewModel.orders) { order in
+//                            NavigationLink {
+//                                // Destination: Detail view for the selected order
+//                                OrderDetailView(order: order)
+//                            } label: {
+//                                // Row View: How each order looks in the list
+//                                OrderRow(order: order)
+//                            }
+//                        }
+//                    }
+//                    // ... (rest of List remains the same) ...
+//                }
+//                .listStyle(.plain)
+//                .refreshable {
+//                    // Call loadOrders on the SHARED orderViewModel
+//                    await orderViewModel.loadOrders()
+//                }
+//
+//                // --- Overlays for Loading/Empty/Error States (Using the SHARED orderViewModel) ---
+//                if orderViewModel.isLoadingList && orderViewModel.orders.isEmpty { // Use isLoadingList
+//                    ProgressView()
+//                        .scaleEffect(1.5)
+//                        .progressViewStyle(.circular)
+//                } else if !orderViewModel.isLoadingList && orderViewModel.orders.isEmpty { // Use isLoadingList
+//                     // Empty State View
+//                    VStack(spacing: 10) { /* ... Empty state content ... */ }
+//                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                    .background(Color(.systemBackground))
+//                } else if let errorMessage = orderViewModel.listErrorMessage { // Use listErrorMessage
+//                    // Error State View
+//                     VStack(spacing: 10) {
+//                         // ... Error state content ...
+//                         Button("Retry") {
+//                             // Call loadOrders on the SHARED orderViewModel
+//                             Task { await orderViewModel.loadOrders() }
+//                         }
+//                         // ...
+//                     }
+//                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+//                     .background(Color(.systemBackground))
+//                 }
+//
+//            } // End ZStack
+//            .navigationTitle("My Orders")
+//            .onAppear {
+//                // Load orders using the SHARED orderViewModel if empty
+//                // This ensures data is loaded when the tab becomes active if needed
+//                if orderViewModel.orders.isEmpty && !orderViewModel.isLoadingList { // Check loading flag too
+//                    Task {
+//                        await orderViewModel.loadOrders()
+//                    }
+//                }
+//            }
+//        } // End NavigationStack
+//    }
+//}
+
 struct OrderView: View {
-    // Create and own the ViewModel for this view's lifecycle
-    @StateObject private var viewModel = OrderViewModel() // Uses MockOrderService by default
+    // Create and own the orderViewModel for this view's lifecycle
+    @EnvironmentObject private var orderViewModel: OrderViewModel
 
     var body: some View {
         // Use NavigationStack for modern navigation
@@ -18,8 +88,8 @@ struct OrderView: View {
                 // Main List Content
                 List {
                     // Check if orders are loaded and not empty
-                    if !viewModel.isLoading && !viewModel.orders.isEmpty {
-                        ForEach(viewModel.orders) { order in
+                    if !orderViewModel.isLoading && !orderViewModel.orders.isEmpty {
+                        ForEach(orderViewModel.orders) { order in
                             NavigationLink {
                                 // Destination: Detail view for the selected order
                                 OrderDetailView(order: order)
@@ -35,16 +105,16 @@ struct OrderView: View {
                 .listStyle(.plain) // Optional: Use plain style
                 // Pull-to-refresh functionality
                 .refreshable {
-                    await viewModel.loadOrders()
+                    await orderViewModel.loadOrders()
                 }
 
                 // --- Overlays for Loading/Empty/Error States ---
-                if viewModel.isLoading && viewModel.orders.isEmpty {
+                if orderViewModel.isLoading && orderViewModel.orders.isEmpty {
                     // Show loading indicator only on initial load
                     ProgressView()
                         .scaleEffect(1.5) // Make it slightly larger
                         .progressViewStyle(.circular)
-                } else if !viewModel.isLoading && viewModel.orders.isEmpty {
+                } else if !orderViewModel.isLoading && orderViewModel.orders.isEmpty {
                      // Empty State View
                     VStack(spacing: 10) {
                         Image(systemName: "shippingbox") // Or relevant icon
@@ -61,7 +131,7 @@ struct OrderView: View {
                     // Prevent List separators from showing through
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(Color(.systemBackground)) // Match list background
-                } else if let errorMessage = viewModel.errorMessage {
+                } else if let errorMessage = orderViewModel.errorMessage {
                     // Error State View
                      VStack(spacing: 10) {
                          Image(systemName: "exclamationmark.triangle")
@@ -75,7 +145,7 @@ struct OrderView: View {
                              .multilineTextAlignment(.center)
                              .padding(.horizontal)
                          Button("Retry") {
-                             Task { await viewModel.loadOrders() }
+                             Task { await orderViewModel.loadOrders() }
                          }
                          .buttonStyle(.bordered)
                          .padding(.top)
@@ -89,9 +159,9 @@ struct OrderView: View {
             // Load orders when the view appears
             .onAppear {
                 // Only load initially if orders haven't been loaded yet
-                if viewModel.orders.isEmpty {
+                if orderViewModel.orders.isEmpty {
                     Task {
-                        await viewModel.loadOrders()
+                        await orderViewModel.loadOrders()
                     }
                 }
             }
@@ -109,7 +179,7 @@ struct OrderRow: View {
             VStack(alignment: .leading, spacing: 5) {
                 Text("Order #\(order.orderNumber)")
                     .font(.headline)
-                Text(order.orderDate, style: .date) // Format date only
+                Text(order.createdAt, style: .date) // Format date only
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
@@ -174,7 +244,7 @@ struct OrderDetailView: View {
                     Text("Order #\(order.orderNumber)")
                         .font(.title.weight(.bold))
                     HStack {
-                        Text("Placed on \(order.orderDate, style: .date)")
+                        Text("Placed on \(order.createdAt, style: .date)")
                         Spacer()
                         OrderStatusBadge(status: order.status)
                     }

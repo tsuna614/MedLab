@@ -17,8 +17,11 @@ class ProductViewModel: ObservableObject {
     private let limit = 10
     private var category: String?
     
-    init(category: String? = nil) {
+    private let productService: ProductServicing
+    
+    init(category: String? = nil, productService: ProductServicing) {
         self.category = category
+        self.productService = productService
     }
     
     func loadInitialProducts() async {
@@ -35,7 +38,7 @@ class ProductViewModel: ObservableObject {
         isLoading = true
         
         do {
-            let response = try await ProductService.shared.fetchProduct(page: currentPage, limit: limit, category: category)
+            let response = try await productService.fetchProducts(page: currentPage, limit: limit, category: category)
             products += response.products
             hasMore = response.currentPage < response.totalPages
             currentPage += 1

@@ -8,12 +8,15 @@
 import SwiftUI
 
 struct ProductListView: View {
+//    @StateObject var productService: ProductService
     @StateObject var viewModel: ProductViewModel
     
     var category: String?
     
     init(category: String? = nil) {
-        _viewModel = StateObject(wrappedValue: ProductViewModel(category: category))
+        let productServiceInstance = ProductService(apiClient: ApiClient(baseURLString: "http://localhost:3000"))
+//        _productService = StateObject(wrappedValue: productServiceInstance)
+        _viewModel = StateObject(wrappedValue: ProductViewModel(category: category, productService: productServiceInstance))
 //        viewModel = ProductViewModel(category: category)
         self.category = category
     }
@@ -33,6 +36,7 @@ struct ProductListView: View {
                 }
             }
         }
+        .navigationTitle(category ?? "")
         .task {
             await viewModel.loadInitialProducts()
         }
