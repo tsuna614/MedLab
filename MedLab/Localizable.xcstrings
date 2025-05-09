@@ -86,9 +86,6 @@
     "Error Loading Orders" : {
 
     },
-    "Error: Order details not available." : {
-
-    },
     "Estimated Tax" : {
 
     },
@@ -147,6 +144,9 @@
 
     },
     "Order #%@" : {
+
+    },
+    "Order Confirmed (Details Pending)" : {
 
     },
     "Order Details" : {

@@ -10,9 +10,12 @@ import SwiftUI
 struct CartView: View {
     // Access the shared CartViewModel from the environment
     @EnvironmentObject var cartViewModel: CartViewModel
+    // inject appVM and navigationPath to pop the checkout view when pressing "Done"
+    @EnvironmentObject var appViewModel: AppViewModel
+    @State private var navigationPath = NavigationPath()
     
     var body: some View {
-        NavigationView {
+        NavigationStack(path: $navigationPath) {
             VStack { // Use VStack to allow adding summary/buttons outside the List
                 if cartViewModel.cartItems.isEmpty {
                     // --- Empty Cart State ---
@@ -47,7 +50,24 @@ struct CartView: View {
                 }
             }
             .navigationTitle("Shopping Cart")
-            .navigationBarItems(trailing: EditButton()) // Add Edit button for delete mode
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    EditButton()
+                }
+            }
+            .onChange(of: appViewModel.shouldPopToRoot) { oldValue, newValue in
+                print("popping view")
+                if newValue == true {
+                    print("Popping navigation stack to root (New onChange)...")
+                    Task { @MainActor in
+                        if appViewModel.shouldPopToRoot == true {
+                            navigationPath = NavigationPath() // Reset path HERE
+                            appViewModel.shouldPopToRoot = false // Reset flag
+                            print("Reset path and shouldPopToRoot flag.")
+                        }
+                    }
+                }
+            }
         }
         // Inject the ViewModel for the preview if needed directly here
         // .environmentObject(CartViewModel(sampleData: true))
@@ -151,7 +171,6 @@ struct CartItemRow: View {
 
 struct CartSummaryView: View {
     @EnvironmentObject var cartViewModel: CartViewModel
-    @EnvironmentObject var appViewModel: AppViewModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -168,9 +187,6 @@ struct CartSummaryView: View {
                     .font(.body.weight(.medium))
             }
             
-            // Add lines for Shipping, Tax etc. if needed
-            // HStack { ... }
-            
             Divider()
             
             HStack {
@@ -181,52 +197,25 @@ struct CartSummaryView: View {
                     .font(.headline)
             }
             
-            //            Button {
-            //                // Action for checkout
-            //                print("Proceed to Checkout tapped!")
-            //                print("Total Price: \(cartViewModel.totalPrice)")
-            //                cartViewModel.cartItems.forEach { $0.printCart() } // Use your printCart method
-            //            } label: {
-            //                Text("Proceed to Checkout")
-            //                    .font(.headline)
-            //                    .frame(maxWidth: .infinity) // Make button wide
-            //            }
-            //            .padding(.vertical, 8)
-            //            .background(Color.blue)
-            //            .foregroundColor(.white)
-            //            .cornerRadius(10)
-            //            .padding(.top) // Add space before button
             NavigationLink {
                 CheckoutView()
-                // Important: Ensure CheckoutView also gets dependencies if needed
-                // e.g., .environmentObject(cartViewModel) if it wasn't already injected higher up
             } label: {
-                // Label: How the navigation link LOOKS (like the old button)
                 Text("Proceed to Checkout")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8) // Apply padding inside the label
+                    .padding(.vertical, 8)
                     .background(Color.blue)
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }
             // Disable the link if the cart is empty
             .disabled(cartViewModel.cartItems.isEmpty)
-            .padding(.top) // Add space before the link/button
+            .padding(.top)
             
         }
-        .padding() // Padding inside the summary box
+        .padding()
         .background(Color(.systemGray6)) // Subtle background for the box
         .cornerRadius(12)
-        .shadow(color: .black.opacity(0.1), radius: 5, y: 2) // Optional shadow
+        .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
     }
 }
-
-
-//// MARK: - Preview
-//
-//#Preview {
-//    CartView()
-//        // Provide the ViewModel with sample data for the preview
-//        .environmentObject(CartViewModel(sampleData: true))
-//}

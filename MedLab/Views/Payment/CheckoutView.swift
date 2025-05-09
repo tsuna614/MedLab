@@ -197,6 +197,7 @@ struct CheckoutView: View {
 struct OrderConfirmationView: View {
     let order: Order
     @Environment(\.dismiss) var dismiss // To potentially dismiss checkout view
+    @EnvironmentObject var appViewModel: AppViewModel
     
     var body: some View {
         VStack {
@@ -215,11 +216,10 @@ struct OrderConfirmationView: View {
             }
             Spacer()
             Button("Done") {
-                // How to dismiss back to main tabs? Might need coordinator or binding.
-                // For now, just dismisses this confirmation screen.
-                // If pushed onto NavStack, this goes back to CheckoutView.
-                // Need a better way to dismiss CheckoutView itself.
-                print("Done tapped - need better navigation handling")
+                print("Order placed")
+                dismiss()
+//                appViewModel.shouldPopToRoot = true
+//                print("Done tapped - need better navigation handling")
             }
             .padding(.bottom)
         }
@@ -227,125 +227,6 @@ struct OrderConfirmationView: View {
         .navigationBarBackButtonHidden() // Hide back button after confirmation
     }
 }
-
-
-//struct CheckoutView: View {
-//    // 1. Add EnvironmentObject to access the CartViewModel
-//    @EnvironmentObject var cartViewModel: CartViewModel
-//
-//    // State for address/payment selection would go here eventually
-//    // @State private var selectedAddress: Address?
-//    // @State private var selectedPayment: PaymentMethod?
-//
-//    let singleProduct: Product?
-//
-//    // Placeholders for display (keep for now or replace with state)
-//    private var placeholderAddress = "123 Shipping Ln\nCupertino, CA 95014\nUnited States"
-//    private var placeholderPayment = "Visa ending in 4242"
-//
-//    init(singleProduct: Product?) {
-//        self.singleProduct = singleProduct
-//    }
-//
-//    var body: some View {
-//        NavigationStack {
-//            ScrollView {
-//                VStack(alignment: .leading, spacing: 20) {
-//
-//                    // --- Shipping Address Section ---
-//                    SectionBox {
-//                        HStack {
-//                            VStack(alignment: .leading) {
-//                                Text("Shipping Address")
-//                                    .font(.title3.weight(.semibold))
-//                                Text(placeholderAddress)
-//                                    .font(.subheadline)
-//                                    .foregroundColor(.secondary)
-//                                    .padding(.top, 2)
-//                            }
-//                            Spacer()
-//                            Button("Change") { print("Change Address Tapped") }
-//                                .font(.callout)
-//                        }
-//                    }
-//
-//                    // --- Payment Method Section ---
-//                    SectionBox {
-//                        HStack {
-//                            VStack(alignment: .leading) {
-//                                Text("Payment Method")
-//                                    .font(.title3.weight(.semibold))
-//                                HStack {
-//                                    Image(systemName: "creditcard.fill")
-//                                        .foregroundColor(.blue)
-//                                    Text(placeholderPayment)
-//                                        .font(.subheadline)
-//                                        .foregroundColor(.secondary)
-//                                }
-//                                .padding(.top, 2)
-//                            }
-//                            Spacer()
-//                            Button("Change") { print("Change Payment Tapped") }
-//                                .font(.callout)
-//                        }
-//                    }
-//
-//                    // --- Order Summary Section ---
-//                    // Now uses the real CartViewModel data
-//                    VStack(alignment: .leading) {
-//                        Text("Order Summary")
-//                            .font(.title3.weight(.semibold))
-//                            .padding(.horizontal)
-//                        // Pass the ViewModel data implicitly via EnvironmentObject
-//                        if singleProduct != nil {
-//                            SingleProductCheckoutSummaryView(singleProduct: singleProduct!)
-//                        } else {
-//                            CheckoutSummaryView() // Renamed from Placeholder
-//                        }
-//                    }
-//
-//                    Spacer()
-//
-//                }
-//                .padding(.vertical)
-//
-//            }
-//            .background(Color(.systemGroupedBackground))
-//            .navigationTitle("Checkout")
-//            .navigationBarTitleDisplayMode(.inline)
-//
-//            // --- Place Order Button ---
-//            .safeAreaInset(edge: .bottom) {
-//                Button {
-//                    print("Place Order Tapped!")
-//                } label: {
-//                    // Display total price on the button as well
-//                    Text("Place Order - \(String(format: "$%.2f", calculateFinalTotal()))") // Calculate total
-//                        .font(.headline)
-//                        .frame(maxWidth: .infinity)
-//                }
-//                .padding()
-//                .background(Color.blue)
-//                .foregroundColor(.white)
-//                .cornerRadius(10)
-//                .padding(.horizontal)
-//                .padding(.bottom, 8)
-//                .background(.regularMaterial)
-//                // Disable button if cart is empty
-//                .disabled(cartViewModel.cartItems.isEmpty && (singleProduct == nil))
-//            }
-//        }
-//    }
-//
-//    // Helper function to calculate total including potential shipping/tax
-//    // For now, it just returns the cartViewModel's total price
-//    private func calculateFinalTotal() -> Double {
-//        // Add shipping, tax calculations here when available
-//        let shippingCost: Double = 5.00 // Example
-//        let taxAmount: Double = cartViewModel.totalPrice * 0.08 // Example 8% tax
-//        return cartViewModel.totalPrice + shippingCost + taxAmount
-//    }
-//}
 
 // Helper View for consistent section styling (Keep as is)
 struct SectionBox<Content: View>: View {

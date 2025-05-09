@@ -13,6 +13,9 @@ class AppViewModel: ObservableObject {
     @Published var isLoading = true
     @Published var user: User?
     
+    @Published var shouldPopToRoot: Bool = false // Signal to reset navigation
+    @Published var selectedTab: Int = 0 // Example if using programmatic tab switching
+    
     // MARK: - init
     init() {
         checkStoredCredentials()
