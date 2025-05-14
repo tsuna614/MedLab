@@ -11,6 +11,7 @@ struct ProductCard: View {
     @EnvironmentObject var cartViewModel: CartViewModel
     @EnvironmentObject var appViewModel: AppViewModel
     @EnvironmentObject var snackbarViewModel: SnackBarViewModel
+    
     let product: Product
     
     var body: some View {

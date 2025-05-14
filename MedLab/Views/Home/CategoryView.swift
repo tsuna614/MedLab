@@ -28,9 +28,10 @@ struct CategoryCard: View {
     var width: CGFloat? = nil
     var showingDescription: Bool = true
     let category: ProductCategory
+    
 
     var body: some View {
-        NavigationLink(destination: ProductListView(category: category.title)) {
+        NavigationLink(destination: ProductListView(category: category.rawTitleValue)) {
             ZStack(alignment: .bottomTrailing) {
                 // Background image
                 Image(category.imagePath)

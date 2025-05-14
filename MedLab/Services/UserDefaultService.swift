@@ -16,6 +16,7 @@ class UserDefaultsService {
     private enum Keys {
         static let userId = "userId"
         static let accessToken = "accessToken"
+        static let selectedLanguageRawValue = "selectedLanguageRawValue"
     }
 
     func setUserId(_ id: String) {
@@ -25,6 +26,11 @@ class UserDefaultsService {
     func setAccessToken(_ token: String) {
         defaults.set(token, forKey: Keys.accessToken)
     }
+    
+    func setSelectedLanguage(_ language: AppLanguage) {
+        defaults.set(language.rawValue, forKey: Keys.selectedLanguageRawValue)
+        print("UserDefaultsService: Saved language - \(language.rawValue)")
+    }
 
     func getUserId() -> String? {
         return defaults.string(forKey: Keys.userId)
@@ -32,6 +38,16 @@ class UserDefaultsService {
 
     func getAccessToken() -> String? {
         return defaults.string(forKey: Keys.accessToken)
+    }
+    
+    func getSelectedLanguage() -> AppLanguage {
+        if let rawValue = defaults.string(forKey: Keys.selectedLanguageRawValue),
+           let language = AppLanguage(rawValue: rawValue) {
+            print("UserDefaultsService: Retrieved language - \(language.rawValue)")
+            return language
+        }
+        print("UserDefaultsService: No stored language found or invalid, defaulting to English.")
+        return .english
     }
 
     func clearSession() {

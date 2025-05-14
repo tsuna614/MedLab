@@ -19,6 +19,9 @@ struct ContentView: View {
     // --- ViewModels (Depend on Services) ---
     @StateObject private var cartViewModel: CartViewModel
     @StateObject private var orderViewModel: OrderViewModel // Added OrderViewModel
+    
+    // Localization Settings
+    @StateObject private var languageSettings = LanguageSettingsObserver()
 
     
     init() {
@@ -49,55 +52,61 @@ struct ContentView: View {
     }
     
     var body: some View {
-        ZStack {
-            Group {
-                if appViewModel.isLoading {
-                    ProgressView("Checking login...")
-                } else if appViewModel.isAuthenticated {
-                    MainTabView()
-                } else {
-                    LoginView()
+        
+        if languageSettings.currentLocaleIdentifier == "default" {
+            ZStack {
+                Group {
+                    if appViewModel.isLoading {
+                        ProgressView("Checking login...")
+                    } else if appViewModel.isAuthenticated {
+                        MainTabView()
+                    } else {
+                        LoginView()
+                    }
+                }
+                
+                if snackbarViewModel.showSnackbar {
+                    VStack {
+                        Spacer()
+                        SnackbarView(message: snackbarViewModel.message)
+                    }
+                    .padding(.bottom, 50)
                 }
             }
-            
-            if snackbarViewModel.showSnackbar {
-                VStack {
-                    Spacer()
-                    SnackbarView(message: snackbarViewModel.message)
+            .environmentObject(appViewModel)
+            .environmentObject(cartViewModel)
+            .environmentObject(orderViewModel)
+            .environmentObject(snackbarViewModel)
+            .environmentObject(languageSettings)
+        } else {
+            ZStack {
+                Group {
+                    if appViewModel.isLoading {
+                        ProgressView("Checking login...")
+                    } else if appViewModel.isAuthenticated {
+                        MainTabView()
+                    } else {
+                        LoginView()
+                    }
                 }
-                .padding(.bottom, 50)
+                
+                if snackbarViewModel.showSnackbar {
+                    VStack {
+                        Spacer()
+                        SnackbarView(message: snackbarViewModel.message)
+                    }
+                    .padding(.bottom, 50)
+                }
             }
+            .environmentObject(appViewModel)
+            .environmentObject(cartViewModel)
+            .environmentObject(orderViewModel)
+            .environmentObject(snackbarViewModel)
+            .environment(\.locale, Locale(identifier: languageSettings.currentLocaleIdentifier))
+            .environmentObject(languageSettings)
         }
-        .environmentObject(appViewModel)
-        .environmentObject(cartViewModel)
-        .environmentObject(orderViewModel)
-        .environmentObject(snackbarViewModel)
     }
 }
-
-//struct ContentView: View {
-//    @StateObject var snackbarViewModel = SnackBarViewModel()
-//
-//    var body: some View {
-//        ZStack {
-//            VStack {
-//                Button("Show Snackbar") {
-//                    withAnimation {
-//                        snackbarViewModel.showSnackbar(message: "Snack bar is pressed!")
-//                    }
-//                }
-//            }
-//
-//            if snackbarViewModel.showSnackbar {
-//                VStack {
-//                    Spacer()
-//                    SnackbarView(message: snackbarViewModel.message)
-//                }
-//                .padding(.bottom, 50)
-//            }
-//        }
-//    }
-//}
 
 #Preview {
     ContentView()
