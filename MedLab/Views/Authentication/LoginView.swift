@@ -9,22 +9,26 @@ import SwiftUI
 
 struct LoginView: View {
     @EnvironmentObject var appViewModel: AppViewModel
-    @StateObject private var viewModel: LoginViewModel
+    @StateObject private var viewModel: AuthViewModel
+    @StateObject private var authService: AuthService
 
     init() {
         // Temporary placeholder, real init done in body
-        _viewModel = StateObject(wrappedValue: LoginViewModel(appViewModel: AppViewModel()))
+        let apiClientInstance = ApiClient(baseURLString: "http://localhost:3000")
+        let authServiceInstance = AuthService(apiClient: apiClientInstance)
+        _authService = StateObject(wrappedValue: authServiceInstance)
+        _viewModel = StateObject(wrappedValue: AuthViewModel(appViewModel: AppViewModel(), authService: authServiceInstance))
     }
 
     var body: some View {
         // Replace the placeholder ViewModel with the one using actual environment object
-        LoginViewContent(viewModel: LoginViewModel(appViewModel: appViewModel))
+        LoginViewContent(viewModel: AuthViewModel(appViewModel: appViewModel, authService: authService))
     }
 }
 
 struct LoginViewContent: View {
-    @ObservedObject var viewModel: LoginViewModel
-    @EnvironmentObject var cartViewModel: CartViewModel
+    @ObservedObject var viewModel: AuthViewModel
+//    @EnvironmentObject var cartViewModel: CartViewModel
     
     var body: some View {
         NavigationStack {
@@ -49,9 +53,9 @@ struct LoginViewContent: View {
                 } else {
                     Button("Login") {
                         viewModel.login { success in
-                            Task {
-                                await cartViewModel.fetchCart()
-                            }
+//                            Task {
+//                                await cartViewModel.fetchCart()
+//                            }
                         }
                     }
                     .padding()
@@ -61,7 +65,7 @@ struct LoginViewContent: View {
                     .cornerRadius(8)
                 }
                 
-                NavigationLink("Don't have an account? Sign up", destination: SignupView())
+                NavigationLink("Don't have an account? Sign up", destination: SignupView(authViewModel: viewModel))
                     .padding(.top, 10)
                 
                 Spacer()

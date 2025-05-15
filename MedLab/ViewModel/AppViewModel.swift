@@ -7,24 +7,30 @@
 
 import SwiftUI
 
-@MainActor // to remove DispatchQueue.main.async blocks, because Swift will automatically run your code on the main thread
+@MainActor // to remove DispatchQueue.main.async blocks, because Swift will automatically run my code on the main thread
 class AppViewModel: ObservableObject {
     @Published var isAuthenticated = false
     @Published var isLoading = true
     @Published var user: User?
     
-    @Published var shouldPopToRoot: Bool = false // Signal to reset navigation
-    @Published var selectedTab: Int = 0 // Example if using programmatic tab switching
+    @Published var shouldPopToRoot: Bool = false
+    @Published var selectedTab: Int = 0
+    
+    @StateObject private var userService: UserService
     
     // MARK: - init
     init() {
+        let apiClientInstance = ApiClient(baseURLString: "http://localhost:3000")
+        let userServiceInstance = UserService(apiClient: apiClientInstance)
+        _userService = StateObject(wrappedValue: userServiceInstance)
+        
         checkStoredCredentials()
     }
     
     func checkStoredCredentials() {
         guard
-            let userId = UserDefaultsService.shared.getUserId(),
-            let token = UserDefaultsService.shared.getAccessToken()
+            (UserDefaultsService.shared.getUserId() != nil),
+            (UserDefaultsService.shared.getAccessToken() != nil)
         else {
             isAuthenticated = false
             isLoading = false
@@ -33,9 +39,9 @@ class AppViewModel: ObservableObject {
         
         Task {
             do {
-                let fetchedUser = try await UserService.shared.fetchUser(userId: userId, accessToken: token)
-                self.user = fetchedUser // Store fetched user
-                self.isAuthenticated = true // Mark as authenticated
+                let fetchedUser = try await userService.fetchUser()
+                self.user = fetchedUser
+                self.isAuthenticated = true
                 print("AppViewModel: User authenticated via stored credentials. User: \(fetchedUser.email)")
             } catch {
                 print("❌ AppViewModel: Fetch user with stored credentials failed: \(error.localizedDescription)")
@@ -45,6 +51,10 @@ class AppViewModel: ObservableObject {
             }
             self.isLoading = false
         }
+    }
+    
+    func setUser(_ user: User) {
+        self.user = user
     }
     
     func setUserFromJSON(from dictionary: [String: Any]) {

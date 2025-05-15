@@ -1,18 +1,18 @@
+////
+////  LoginRequest.swift
+////  MedLab
+////
+////  Created by Khanh Nguyen Quoc on 26/3/25.
+////
 //
-//  LoginRequest.swift
-//  MedLab
+//import Foundation
 //
-//  Created by Khanh Nguyen Quoc on 26/3/25.
+//struct LoginRequest: Codable {
+//    let email: String
+//    let password: String
+//}
 //
-
-import Foundation
-
-struct LoginRequest: Codable {
-    let email: String
-    let password: String
-}
-
-struct LoginResponse: Codable {
-    let token: String
-    let userId: Int
-}
+//struct LoginResponse: Codable {
+//    let token: String
+//    let userId: Int
+//}

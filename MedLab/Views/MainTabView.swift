@@ -8,6 +8,31 @@
 import SwiftUI
 
 struct MainTabView: View {
+    // --- ViewModels ---
+    @StateObject private var cartViewModel: CartViewModel
+    @StateObject private var orderViewModel: OrderViewModel
+    
+    init() {
+        // Api client
+        let apiClientInstance = ApiClient(baseURLString: "http://localhost:3000")
+        
+        // Services
+        let cartServiceInstance = CartService(apiClient: apiClientInstance)
+        let orderServiceInstance = OrderService(apiClient: apiClientInstance)
+
+        // Create VM instance
+        let appVMInstance = AppViewModel()
+        let cartVMInstance = CartViewModel(cartService: cartServiceInstance)
+        
+        // View Models
+        _cartViewModel = StateObject(wrappedValue: cartVMInstance)
+        _orderViewModel = StateObject(wrappedValue: OrderViewModel(
+            orderService: orderServiceInstance,
+            cartViewModel: cartVMInstance,
+            appViewModel: appVMInstance
+        ))
+    }
+    
     var body: some View {
         TabView {
             HomeView()
@@ -35,5 +60,7 @@ struct MainTabView: View {
                     Label("Profile", systemImage: "person.crop.circle")
                 }
         }
+        .environmentObject(cartViewModel)
+        .environmentObject(orderViewModel)
     }
 }

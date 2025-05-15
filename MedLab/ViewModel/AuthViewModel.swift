@@ -1,15 +1,15 @@
 //
-//  SignupViewModel.swift
+//  LoginViewModel.swift
 //  MedLab
 //
-//  Created by Khanh Nguyen Quoc on 27/3/25.
+//  Created by Khanh Nguyen Quoc on 26/3/25.
 //
 
 import Foundation
 import SwiftUI
 
 @MainActor
-class SignupViewModel: ObservableObject {
+class AuthViewModel: ObservableObject {
     @Published var email: String = ""
     @Published var firstName: String = ""
     @Published var lastName: String = ""
@@ -21,11 +21,38 @@ class SignupViewModel: ObservableObject {
     @Published var userType: String = ""
     
     private let appViewModel: AppViewModel
-    private let authService: AuthService
+    private let authService: AuthServicing
     
-    init(appViewModel: AppViewModel, authService: AuthService) {
+    init(appViewModel: AppViewModel, authService: AuthServicing) {
         self.appViewModel = appViewModel
         self.authService = authService
+    }
+    
+    func login(completion: @escaping (Bool) -> Void) {
+        guard !email.isEmpty, !password.isEmpty else {
+            errorMessage = "Please enter both fields."
+            return
+        }
+        
+        self.isLoading = true
+        self.errorMessage = nil
+        
+        Task {
+            do {
+                let response: LoginResponse = try await authService.login(email: email, password: password)
+                self.appViewModel.setUser(response.userData)
+                UserDefaultsService.shared.setUserId(response.userData.id)
+                UserDefaultsService.shared.setAccessToken(response.accessToken)
+                self.appViewModel.isAuthenticated = true
+                self.isLoading = false
+                completion(true)
+            } catch {
+                print("ERROR!!! \(error.localizedDescription)")
+                self.errorMessage = error.localizedDescription
+                self.isLoading = false
+                completion(false)
+            }
+        }
     }
     
     func register(completion: @escaping (Bool) -> Void) {
@@ -61,9 +88,7 @@ class SignupViewModel: ObservableObject {
         Task {
             do {
                 let response: User = try await authService.register(user: user, password: password)
-                self.appViewModel.setUser(response)
-                self.appViewModel.isAuthenticated = true
-                completion(true)
+                login(completion: completion)
             } catch {
                 self.errorMessage = error.localizedDescription
                 completion(false)

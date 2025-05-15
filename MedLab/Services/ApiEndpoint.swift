@@ -8,6 +8,10 @@
 import Foundation
 
 enum ApiEndpoint {
+    // Auth Services
+    case login
+    case register
+    
     // Cart Endpoints
     case getCart
     case addCartItem(productId: String, quantity: Int)
@@ -22,10 +26,20 @@ enum ApiEndpoint {
     // Add other endpoints as needed (e.g., auth, orders)
     case getOrders
     case createOrder(orderData: CreateOrderRequest)
+    
+    // User Endpoints
+    case fetchUser
+    case updateUser
 
     // Computed properties to define path and method
     var path: String {
         switch self {
+        // Auth Paths
+        case .login:
+            return "/auth/login"
+        case .register:
+            return "/auth/register"
+            
         // Cart Paths
         case .getCart:
             return "/carts"
@@ -47,18 +61,23 @@ enum ApiEndpoint {
         // Order Paths
         case .getOrders, .createOrder:
             return "/orders"
+            
+        // User Paths
+        case .fetchUser, .updateUser:
+            return "/users"
         }
+        
         
     }
 
     var method: String {
         switch self {
         // Cart Methods
-        case .getCart, .getProductDetail, .getProducts, .getOrders:
+        case .getCart, .getProductDetail, .getProducts, .getOrders, .fetchUser:
             return "GET"
-        case .addCartItem, .createOrder:
+        case .addCartItem, .createOrder, .login, .register:
             return "POST"
-        case .updateCartItemQuantity:
+        case .updateCartItemQuantity, .updateUser:
             return "PUT"
         case .removeCartItem, .clearCart:
             return "DELETE"
@@ -82,19 +101,22 @@ enum ApiEndpoint {
     var requiresAuth: Bool {
         switch self {
         case
-            //                .login,
-            //                .refreshToken,
+                .login,
+                .register,
                 .getProducts,
                 .getProductDetail:
             return false
             
-        case .getCart,
+        case
+                .getCart,
                 .addCartItem,
                 .updateCartItemQuantity,
                 .removeCartItem,
                 .clearCart,
                 .getOrders,
-                .createOrder:
+                .createOrder,
+                .fetchUser,
+                .updateUser:
             return true
         }
     }

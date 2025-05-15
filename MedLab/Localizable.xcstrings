@@ -93,6 +93,9 @@
         }
       }
     },
+    "Address" : {
+
+    },
     "Already have an account? Sign in" : {
       "localizations" : {
         "es" : {
@@ -350,6 +353,7 @@
       }
     },
     "Edit Profile Screen for %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "es" : {
           "stringUnit" : {
@@ -739,6 +743,9 @@
         }
       }
     },
+    "Personal Information" : {
+
+    },
     "Phone: %@" : {
       "localizations" : {
         "es" : {
@@ -898,6 +905,9 @@
           }
         }
       }
+    },
+    "Save Changes" : {
+
     },
     "Search..." : {
       "localizations" : {

@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-// this is to switch the local between user's choice and system default (injected in ContentView)
-
 struct ConditionalLocaleEnvironment: ViewModifier {
     let localeIdentifier: String?
 

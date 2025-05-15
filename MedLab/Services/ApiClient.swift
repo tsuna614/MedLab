@@ -74,18 +74,19 @@ class ApiClient: ObservableObject {
         }
 
 
-        // 4. Add Authorization Header (CRUCIAL)
-        // Fetch token ONLY if the endpoint requires authentication (you might add a flag to ApiEndpoint)
-        // For simplicity here, we assume most endpoints need it. Refine as needed.
-        if let token = UserDefaultsService.shared.getAccessToken(), !token.isEmpty {
-             request.setValue(token, forHTTPHeaderField: "x_authorization")
-            // print("ℹ️ ApiClient: Added x_authorization header.")
-        } else {
-            // Decide how to handle missing token for protected routes.
-            // Could throw immediately or let the server return 401.
-            // Throwing early can be clearer.
-            print("⚠️ ApiClient: No access token found for potentially protected route \(endpoint.path)")
-             // Consider throwing ApiClientError.authenticationError here if endpoint requires auth
+        // 4. Add Authorization Header
+        // Fetch token ONLY if the endpoint requires authentication
+        if endpoint.requiresAuth {
+            if let token = UserDefaultsService.shared.getAccessToken(), !token.isEmpty {
+                request.setValue(token, forHTTPHeaderField: "x_authorization")
+                // print("ℹ️ ApiClient: Added x_authorization header.")
+            } else {
+                // Decide how to handle missing token for protected routes.
+                // Could throw immediately or let the server return 401.
+                // Throwing early can be clearer.
+                print("⚠️ ApiClient: No access token found for potentially protected route \(endpoint.path)")
+                // Consider throwing ApiClientError.authenticationError here if endpoint requires auth
+            }            
         }
 
 

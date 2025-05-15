@@ -8,10 +8,11 @@
 import Foundation
 
 struct Address: Codable {
+    let address: String
     let street: String
     let city: String
-    let state: String
-    let postalCode: String
+    let state: String?
+    let postalCode: String?
     let country: String
 }
 

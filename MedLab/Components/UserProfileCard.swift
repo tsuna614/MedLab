@@ -8,20 +8,17 @@
 import SwiftUI
 
 struct UserProfileCard: View {
-    // The User object to display. Will come from AppViewModel.
-    let user: User? // Make it optional in case user is not loaded yet
-
+    let user: User?
+    
     var body: some View {
         VStack(spacing: 15) {
-            // Avatar (Placeholder)
-            Image(systemName: "person.crop.circle.fill") // Placeholder avatar
+            Image(systemName: "person.crop.circle.fill")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 100, height: 100)
                 .foregroundColor(.gray)
                 .padding(.top)
 
-            // User Name
             if let user = user {
                 Text("\(user.firstName) \(user.lastName)")
                     .font(.title2.weight(.semibold))
@@ -36,21 +33,18 @@ struct UserProfileCard: View {
                         .foregroundColor(.secondary)
                 }
 
-                // You could add more info here like userType if desired
             } else {
                 Text("Loading Profile...")
                     .font(.title2.weight(.semibold))
-                    .redacted(reason: .placeholder) // Show placeholders while loading
+                    .redacted(reason: .placeholder)
                 Text("email@example.com")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .redacted(reason: .placeholder)
             }
 
-            // Edit Profile Button
             NavigationLink {
-                // Destination: EditProfileView (create this view later)
-                EditProfileView(user: user) // Pass the user object
+                EditProfileView(user: user)
             } label: {
                 Text("Edit Profile")
                     .font(.headline)
@@ -60,14 +54,14 @@ struct UserProfileCard: View {
                     .background(Color.blue)
                     .cornerRadius(8)
             }
-            .disabled(user == nil) // Disable if user data isn't loaded
+            .disabled(user == nil)
             .padding(.bottom)
         }
         .frame(maxWidth: .infinity)
-        .background(Color(.secondarySystemGroupedBackground)) // Or any other card background
+        .background(Color(.secondarySystemGroupedBackground))
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.1), radius: 5, y: 2)
-        .padding(.horizontal) // Padding for the card itself
+        .padding(.horizontal)
     }
 }
 

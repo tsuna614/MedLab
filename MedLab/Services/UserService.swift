@@ -7,22 +7,39 @@
 
 import Foundation
 
-class UserService {
-    static let shared = UserService()
+protocol UserServicing {
+    func fetchUser() async throws -> User
+}
+
+class UserService: UserServicing, ObservableObject {
+    private let apiClient: ApiClient
     
-    func fetchUser(userId: String, accessToken: String) async throws -> User {
-        guard let url = URL(string: "http://localhost:3000/users/\(userId)") else {
-            throw URLError(.badURL)
-        }
+    init(apiClient: ApiClient) {
+        self.apiClient = apiClient
+    }
+    
+    func fetchUser() async throws -> User {
+        print("UserService: Fetching user...")
         
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
+        return try await apiClient.request(
+            endpoint: .fetchUser,
+            body: Optional<EmptyBody>.none,
+            responseType: User.self
+        )
         
-        // Await the URLSession call
-        let (data, _) = try await URLSession.shared.data(for: request)
+//        guard let url = URL(string: "http://localhost:3000/users/\(userId)") else {
+//            throw URLError(.badURL)
+//        }
+//        
+//        var request = URLRequest(url: url)
+//        request.httpMethod = "GET"
+//        
+//        // Await the URLSession call
+//        let (data, _) = try await URLSession.shared.data(for: request)
+//        
+//        // Decode to your model
+//        let user = try JSONDecoder().decode(User.self, from: data)
+//        return user
         
-        // Decode to your model
-        let user = try JSONDecoder().decode(User.self, from: data)
-        return user
     }
 }

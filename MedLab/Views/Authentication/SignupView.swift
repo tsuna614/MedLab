@@ -7,23 +7,27 @@
 
 import SwiftUI
 
-struct SignupView: View {
-    @EnvironmentObject var appViewModel: AppViewModel
-    @StateObject private var viewModel: SignupViewModel
-    
-    init() {
-        // Temporary placeholder, real init done in body
-        _viewModel = StateObject(wrappedValue: SignupViewModel(appViewModel: AppViewModel()))
-    }
-    
-    var body: some View {
-        // Replace the placeholder ViewModel with the one using actual environment object
-        SignupViewContent(viewModel: SignupViewModel(appViewModel: appViewModel))
-    }
-}
+//struct SignupView: View {
+//    @EnvironmentObject var appViewModel: AppViewModel
+//    @StateObject private var viewModel: AuthViewModel
+//    @StateObject private var authService: AuthService
+//
+//    init() {
+//        // Temporary placeholder, real init done in body
+//        let apiClientInstance = ApiClient(baseURLString: "http://localhost:3000")
+//        let authServiceInstance = AuthService(apiClient: apiClientInstance)
+//        _authService = StateObject(wrappedValue: authServiceInstance)
+//        _viewModel = StateObject(wrappedValue: AuthViewModel(appViewModel: AppViewModel(), authService: authServiceInstance))
+//    }
+//    
+//    var body: some View {
+//        // Replace the placeholder ViewModel with the one using actual environment object
+//        SignupViewContent(viewModel: AuthViewModel(appViewModel: appViewModel, authService: authService))
+//    }
+//}
 
-struct SignupViewContent: View {
-    @ObservedObject var viewModel: SignupViewModel
+struct SignupView: View {
+    @ObservedObject var authViewModel: AuthViewModel
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -32,22 +36,22 @@ struct SignupViewContent: View {
                 .font(.largeTitle)
                 .bold()
             
-            CustomTextField(placeholder: "Email", text: $viewModel.email)
-            CustomTextField(placeholder: "First Name", text: $viewModel.firstName)
-            CustomTextField(placeholder: "Last Name", text: $viewModel.lastName)
-            CustomTextField(placeholder: "Phone (Not required)", text: $viewModel.number, isNumber: true)
-            CustomTextField(placeholder: "Password", text: $viewModel.password, isSecure: true)
-            CustomTextField(placeholder: "Confirm password", text: $viewModel.confirmPassword, isSecure: true)
+            CustomTextField(placeholder: "Email", text: $authViewModel.email)
+            CustomTextField(placeholder: "First Name", text: $authViewModel.firstName)
+            CustomTextField(placeholder: "Last Name", text: $authViewModel.lastName)
+            CustomTextField(placeholder: "Phone (Not required)", text: $authViewModel.number, isNumber: true)
+            CustomTextField(placeholder: "Password", text: $authViewModel.password, isSecure: true)
+            CustomTextField(placeholder: "Confirm password", text: $authViewModel.confirmPassword, isSecure: true)
             
-            if let error = viewModel.errorMessage {
+            if let error = authViewModel.errorMessage {
                 Text(error).foregroundColor(.red)
             }
             
-            if viewModel.isLoading {
+            if authViewModel.isLoading {
                 ProgressView()
             } else {
                 Button("Login") {
-                    viewModel.register { success in
+                    authViewModel.register { success in
                         
                     }
                 }

@@ -37,26 +37,21 @@ struct TopBar: View {
                 }
                 
                 NavigationLink(destination: CartView()) {
-                    // Use a ZStack to overlay the badge on the icon
-                    ZStack(alignment: .topTrailing) { // Align content to top-right
-                        // Base Cart Icon
+                    ZStack(alignment: .topTrailing) {
                         Image(systemName: "cart")
                             .font(.title2)
                         
-                        // 3. Conditional Badge View
-                        if cartViewModel.totalQuantity > 0 { // Only show if items exist
+                        if cartViewModel.totalQuantity > 0 {
                             Text("\(cartViewModel.totalQuantity)")
-                                .font(.caption2) // Make font small
+                                .font(.caption2)
                                 .foregroundColor(.white)
-                                .padding(4) // Padding inside the circle
-                                .background(Color.red) // Badge background color
-                                .clipShape(Circle()) // Make it circular
-                            // Offset to position it correctly relative to the icon
-                                .offset(x: 10, y: -10) // Adjust x/y as needed for visuals
+                                .padding(4)
+                                .background(Color.red)
+                                .clipShape(Circle())
+                                .offset(x: 10, y: -10)
                         }
                     }
                 }
-//                .foregroundColor(.primary)
             }
             .padding(.horizontal)
             .padding(.top, 8)
