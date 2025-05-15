@@ -37,8 +37,8 @@ class OrderViewModel: ObservableObject {
     @Published var newlyPlacedOrder: Order? = nil
 
     private let orderService: OrderServicing // Dependency
-    let cartViewModel: CartViewModel
     private let appViewModel: AppViewModel
+    private let cartViewModel: CartViewModel
 
     init(orderService: OrderServicing, cartViewModel: CartViewModel, appViewModel: AppViewModel) {
         self.orderService = orderService
@@ -85,6 +85,13 @@ class OrderViewModel: ObservableObject {
             print("❌ \(self.placementErrorMessage!)")
             return
         }
+        
+        guard appViewModel.user?.address != nil else {
+            self.placementErrorMessage = "Please set your address before placing an order."
+            print("❌ \(self.placementErrorMessage!)")
+            return
+        }
+        
         guard !cartViewModel.cartItems.isEmpty else {
             self.placementErrorMessage = "Your cart is empty. Cannot place order."
             print("❌ \(self.placementErrorMessage!)")

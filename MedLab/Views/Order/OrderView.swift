@@ -7,117 +7,35 @@
 
 import SwiftUI
 
-//struct OrderView: View {
-//    // *** CHANGE THIS: Use @EnvironmentObject to get the SHARED instance ***
-//    @EnvironmentObject var orderViewModel: OrderViewModel
-//    // *** REMOVE: @StateObject private var orderViewModel = OrderViewModel() ***
-//
-//    var body: some View {
-//        // Use NavigationStack for modern navigation
-//        NavigationStack {
-//            ZStack { // Use ZStack for overlaying ProgressView
-//                // Main List Content
-//                List {
-//                    // Check if orders are loaded and not empty (Using the SHARED orderViewModel)
-//                    if !orderViewModel.isLoadingList && !orderViewModel.orders.isEmpty { // Use isLoadingList
-//                        ForEach(orderViewModel.orders) { order in
-//                            NavigationLink {
-//                                // Destination: Detail view for the selected order
-//                                OrderDetailView(order: order)
-//                            } label: {
-//                                // Row View: How each order looks in the list
-//                                OrderRow(order: order)
-//                            }
-//                        }
-//                    }
-//                    // ... (rest of List remains the same) ...
-//                }
-//                .listStyle(.plain)
-//                .refreshable {
-//                    // Call loadOrders on the SHARED orderViewModel
-//                    await orderViewModel.loadOrders()
-//                }
-//
-//                // --- Overlays for Loading/Empty/Error States (Using the SHARED orderViewModel) ---
-//                if orderViewModel.isLoadingList && orderViewModel.orders.isEmpty { // Use isLoadingList
-//                    ProgressView()
-//                        .scaleEffect(1.5)
-//                        .progressViewStyle(.circular)
-//                } else if !orderViewModel.isLoadingList && orderViewModel.orders.isEmpty { // Use isLoadingList
-//                     // Empty State View
-//                    VStack(spacing: 10) { /* ... Empty state content ... */ }
-//                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                    .background(Color(.systemBackground))
-//                } else if let errorMessage = orderViewModel.listErrorMessage { // Use listErrorMessage
-//                    // Error State View
-//                     VStack(spacing: 10) {
-//                         // ... Error state content ...
-//                         Button("Retry") {
-//                             // Call loadOrders on the SHARED orderViewModel
-//                             Task { await orderViewModel.loadOrders() }
-//                         }
-//                         // ...
-//                     }
-//                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-//                     .background(Color(.systemBackground))
-//                 }
-//
-//            } // End ZStack
-//            .navigationTitle("My Orders")
-//            .onAppear {
-//                // Load orders using the SHARED orderViewModel if empty
-//                // This ensures data is loaded when the tab becomes active if needed
-//                if orderViewModel.orders.isEmpty && !orderViewModel.isLoadingList { // Check loading flag too
-//                    Task {
-//                        await orderViewModel.loadOrders()
-//                    }
-//                }
-//            }
-//        } // End NavigationStack
-//    }
-//}
-
 struct OrderView: View {
-    // Create and own the orderViewModel for this view's lifecycle
     @EnvironmentObject private var orderViewModel: OrderViewModel
 
     var body: some View {
-        // Use NavigationStack for modern navigation
         NavigationStack {
-            ZStack { // Use ZStack for overlaying ProgressView
-                // Main List Content
+            ZStack {
                 List {
-                    // Check if orders are loaded and not empty
                     if !orderViewModel.isLoading && !orderViewModel.orders.isEmpty {
                         ForEach(orderViewModel.orders) { order in
                             NavigationLink {
-                                // Destination: Detail view for the selected order
                                 OrderDetailView(order: order)
                             } label: {
-                                // Row View: How each order looks in the list
                                 OrderRow(order: order)
                             }
                         }
                     }
-                    // Do not show empty/error message inside the List if it's loading
-                    // Handle those states outside the list using the ZStack overlay
                 }
-                .listStyle(.plain) // Optional: Use plain style
-                // Pull-to-refresh functionality
+                .listStyle(.plain)
                 .refreshable {
                     await orderViewModel.loadOrders()
                 }
 
-                // --- Overlays for Loading/Empty/Error States ---
                 if orderViewModel.isLoading && orderViewModel.orders.isEmpty {
-                    // Show loading indicator only on initial load
                     ProgressView()
-                        .scaleEffect(1.5) // Make it slightly larger
+                        .scaleEffect(1.5)
                         .progressViewStyle(.circular)
                 } else if !orderViewModel.isLoading && orderViewModel.orders.isEmpty {
-                     // Empty State View
                     VStack(spacing: 10) {
-                        Image(systemName: "shippingbox") // Or relevant icon
+                        Image(systemName: "shippingbox")
                             .font(.system(size: 50))
                             .foregroundColor(.secondary)
                         Text("No Orders Yet")
@@ -128,11 +46,9 @@ struct OrderView: View {
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
                     }
-                    // Prevent List separators from showing through
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(Color(.systemBackground)) // Match list background
+                    .background(Color(.systemBackground))
                 } else if let errorMessage = orderViewModel.errorMessage {
-                    // Error State View
                      VStack(spacing: 10) {
                          Image(systemName: "exclamationmark.triangle")
                              .font(.system(size: 50))
@@ -154,18 +70,16 @@ struct OrderView: View {
                      .background(Color(.systemBackground))
                  }
 
-            } // End ZStack
+            }
             .navigationTitle("My Orders")
-            // Load orders when the view appears
             .onAppear {
-                // Only load initially if orders haven't been loaded yet
                 if orderViewModel.orders.isEmpty {
                     Task {
                         await orderViewModel.loadOrders()
                     }
                 }
             }
-        } // End NavigationStack
+        }
     }
 }
 
@@ -234,7 +148,7 @@ struct OrderStatusBadge: View {
 //////////////
 
 struct OrderDetailView: View {
-    let order: Order // Passed in when navigating
+    let order: Order
 
     var body: some View {
         ScrollView {

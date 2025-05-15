@@ -43,7 +43,7 @@ struct SettingsView: View {
 
             Section(header: Text("Account")) {
                 NavigationLink {
-                    EditProfileView(user: appViewModel.user)
+                    EditProfileView(viewModel: EditProfileViewModel(user: appViewModel.user, appViewModel: appViewModel))
                 } label: {
                     Button("Edit Profile") {}
                 }

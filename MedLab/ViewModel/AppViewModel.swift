@@ -16,13 +16,14 @@ class AppViewModel: ObservableObject {
     @Published var shouldPopToRoot: Bool = false
     @Published var selectedTab: Int = 0
     
-    @StateObject private var userService: UserService
+    private let userService: UserServicing
     
     // MARK: - init
-    init() {
-        let apiClientInstance = ApiClient(baseURLString: "http://localhost:3000")
-        let userServiceInstance = UserService(apiClient: apiClientInstance)
-        _userService = StateObject(wrappedValue: userServiceInstance)
+    init(userService: UserServicing) {
+//        let apiClientInstance = ApiClient(baseURLString: "http://localhost:3000")
+//        let userServiceInstance = UserService(apiClient: apiClientInstance)
+//        _userService = StateObject(wrappedValue: userServiceInstance)
+        self.userService = userService
         
         checkStoredCredentials()
     }
@@ -50,6 +51,18 @@ class AppViewModel: ObservableObject {
                 UserDefaultsService.shared.clearSession() // Clear invalid stored session
             }
             self.isLoading = false
+        }
+    }
+    
+    func updateUser(newUser: User) {
+        Task {
+            do {
+                let response = try await userService.updateUser(user: newUser)
+                print(response)
+                setUser(newUser)
+            } catch {
+                print("❌ AppViewModel: Update user failed: \(error.localizedDescription)")
+            }
         }
     }
     

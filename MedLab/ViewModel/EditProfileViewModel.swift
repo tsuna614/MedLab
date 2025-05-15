@@ -27,9 +27,12 @@ class EditProfileViewModel: ObservableObject {
     @Published var saveSuccess: Bool = false
 
     var originalUser: User?
+    
+    private let appViewModel: AppViewModel
 
-    init(user: User?) {
+    init(user: User?, appViewModel: AppViewModel) {
         self.originalUser = user
+        self.appViewModel = appViewModel
         populateFields(from: user)
     }
 
@@ -55,49 +58,50 @@ class EditProfileViewModel: ObservableObject {
         errorMessage = nil
         saveSuccess = false
 
+        // if they are not all empty,
+        if !address.isEmpty || !street.isEmpty || !city.isEmpty || !country.isEmpty {
+            guard !address.isEmpty, !street.isEmpty, !city.isEmpty, !country.isEmpty else {
+                errorMessage = "Please enter all required fields for address."
+                isSaving = false
+                return
+            }
+        }
         
-//        let updatedAddress = Address(
-//            street: street,
-//            city: city,
-//            state: state,
-//            postalCode: postalCode,
-//            country: country
-//        )
+        let updatedAddress = Address(
+            address: address,
+            street: street,
+            city: city,
+            state: state,
+            postalCode: postalCode,
+            country: country
+        )
+        
+        let newUser = User(
+            id: "",
+            email: email,
+            firstName: firstName,
+            lastName: lastName,
+            number: phoneNumber,
+            userType: nil,
+            receiptsId: nil,
+            address: address.isEmpty ? nil : updatedAddress
+        )
+        
+        appViewModel.updateUser(newUser: newUser)
+        saveSuccess = true
+        isSaving = false
+
+//        do {
+//            try await Task.sleep(nanoseconds: 1_500_000_000)
+//            
+//            print("EditProfileViewModel: Profile changes saved successfully (simulated).")
+//            saveSuccess = true
 //
-//        guard let currentUserId = originalUser?.id else {
-//            errorMessage = "User ID missing. Cannot save."
-//            isSaving = false
-//            return
+//        } catch {
+//            print("❌ EditProfileViewModel: Failed to save profile - \(error)")
+//            errorMessage = "Could not save profile changes. Please try again."
 //        }
 
-//        let updatedUserData = User( // This is for local update, API might take partial
-//            id: currentUserId,
-//            email: originalUser?.email ?? "", // Email typically not editable
-//            firstName: firstName,
-//            lastName: lastName,
-//            number: phoneNumber.isEmpty ? nil : phoneNumber,
-//            userType: originalUser?.userType, // Usually not editable by user
-//            receiptsId: originalUser?.receiptsId,
-//            address: updatedAddress
-//        )
 
-        do {
-            // In a real app:
-            // try await userService.updateUserProfile(userId: currentUserId, data: updateUserRequest)
-            try await Task.sleep(nanoseconds: 1_500_000_000) // Simulate network delay
-
-            print("EditProfileViewModel: Profile changes saved successfully (simulated).")
-            saveSuccess = true
-            // Important: After successful API save, you need to update the
-            // user object in your AppViewModel so the rest of the app sees the changes.
-            // This could be done via a callback, a shared service, or directly if
-            // EditProfileViewModel has a reference to AppViewModel.
-
-        } catch {
-            print("❌ EditProfileViewModel: Failed to save profile - \(error)")
-            errorMessage = "Could not save profile changes. Please try again."
-        }
-
-        isSaving = false
     }
 }

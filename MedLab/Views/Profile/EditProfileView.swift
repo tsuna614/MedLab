@@ -7,13 +7,16 @@
 import SwiftUI
 
 struct EditProfileView: View {
-    @StateObject private var viewModel: EditProfileViewModel
-    @Environment(\.dismiss) var dismiss
+    @StateObject var viewModel: EditProfileViewModel
     @EnvironmentObject var appViewModel: AppViewModel
-
-    init(user: User?) {
-        _viewModel = StateObject(wrappedValue: EditProfileViewModel(user: user))
-    }
+    @EnvironmentObject var snackbarViewModel: SnackBarViewModel
+    @Environment(\.dismiss) var dismiss
+    
+//    @EnvironmentObject var appViewModel: AppViewModel
+//
+//    init(user: User?) {
+//        _viewModel = StateObject(wrappedValue: EditProfileViewModel(user: user, appViewModel: appViewModel))
+//    }
 
     var body: some View {
         Form {
@@ -119,18 +122,23 @@ struct EditProfileView: View {
                     Task {
                         await viewModel.saveProfileChanges()
                         if viewModel.saveSuccess {
-                            // Update AppViewModel
-                            if let originalUser = viewModel.originalUser {
-                                let updatedUser = User( /* ... construct updated User ... */
-                                    id: originalUser.id, email: originalUser.email, firstName: viewModel.firstName,
-                                    lastName: viewModel.lastName, number: viewModel.phoneNumber.isEmpty ? nil : viewModel.phoneNumber,
-                                    userType: originalUser.userType, receiptsId: originalUser.receiptsId,
-                                    address: Address(address: viewModel.address, street: viewModel.street, city: viewModel.city, state: viewModel.state,
-                                                     postalCode: viewModel.postalCode, country: viewModel.country)
-                                )
-                                appViewModel.user = updatedUser
-                            }
+//                            // Update AppViewModel
+//                            if let originalUser = viewModel.originalUser {
+//                                let updatedUser = User( /* ... construct updated User ... */
+//                                    id: originalUser.id, email: originalUser.email, firstName: viewModel.firstName,
+//                                    lastName: viewModel.lastName, number: viewModel.phoneNumber.isEmpty ? nil : viewModel.phoneNumber,
+//                                    userType: originalUser.userType, receiptsId: originalUser.receiptsId,
+//                                    address: Address(address: viewModel.address, street: viewModel.street, city: viewModel.city, state: viewModel.state,
+//                                                     postalCode: viewModel.postalCode, country: viewModel.country)
+//                                )
+//                                appViewModel.user = updatedUser
+//                            }
+                            snackbarViewModel.showSnackbar(message: "User updated successfully")
                             dismiss()
+                        }
+                        
+                        if let errorMessage = viewModel.errorMessage {
+                            snackbarViewModel.showSnackbar(message: errorMessage)
                         }
                     }
                 }) {
@@ -147,14 +155,14 @@ struct EditProfileView: View {
                 .disabled(viewModel.isSaving)
             }
 
-            // Display error message if any
-            if let errorMessage = viewModel.errorMessage {
-                Section {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                }
-            }
+//            // Display error message if any
+//            if let errorMessage = viewModel.errorMessage {
+//                Text(errorMessage)
+//                    .foregroundColor(.red)
+//                    .frame(maxWidth: .infinity, alignment: .center)
+////                Section {
+////                }
+//            }
         }
         .navigationTitle("Edit Profile")
         .navigationBarTitleDisplayMode(.inline)

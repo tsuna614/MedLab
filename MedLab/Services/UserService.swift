@@ -7,8 +7,23 @@
 
 import Foundation
 
+struct UpdateUserRequest: Encodable {
+    let email: String
+    let firstName: String
+    let lastName: String
+    let number: String?
+    let userType: String?
+    let receiptsId: [String]?
+    let address: Address?
+}
+
+struct UpdateUserResponse: Codable {
+    let msg: String
+}
+
 protocol UserServicing {
     func fetchUser() async throws -> User
+    func updateUser(user: User) async throws -> UpdateUserResponse
 }
 
 class UserService: UserServicing, ObservableObject {
@@ -41,5 +56,25 @@ class UserService: UserServicing, ObservableObject {
 //        let user = try JSONDecoder().decode(User.self, from: data)
 //        return user
         
+    }
+    
+    func updateUser(user: User) async throws -> UpdateUserResponse {
+        print("UserService: Updating user...")
+        
+        let requestBody = UpdateUserRequest(
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            number: user.number,
+            userType: user.userType,
+            receiptsId: user.receiptsId,
+            address: user.address
+        )
+        
+        return try await apiClient.request(
+            endpoint: .updateUser,
+            body: requestBody,
+            responseType: UpdateUserResponse.self
+        )
     }
 }

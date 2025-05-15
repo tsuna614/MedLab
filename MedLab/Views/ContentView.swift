@@ -8,19 +8,25 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var appViewModel = AppViewModel()
-    @StateObject var snackbarViewModel = SnackBarViewModel() // Assuming global snackbar needed
+    @StateObject private var appViewModel: AppViewModel
+    @StateObject var snackbarViewModel = SnackBarViewModel()
     
     // Localization Settings
     @StateObject private var languageSettings = LanguageSettingsObserver()
 
     
     init() {
+        // Api client
+        let apiClientInstance = ApiClient(baseURLString: "http://localhost:3000")
+        
+        // Services
+        let userServiceInstance = UserService(apiClient: apiClientInstance)
+        
         // Create VM instance
-        let appVMInstance = AppViewModel()
+        let appVMInstance = AppViewModel(userService: userServiceInstance)
         
         // View Models
-        _appViewModel = StateObject(wrappedValue: appVMInstance) // Initialize its wrapper
+        _appViewModel = StateObject(wrappedValue: appVMInstance)
     }
     
     var body: some View {
@@ -31,7 +37,7 @@ struct ContentView: View {
                     if appViewModel.isLoading {
                         ProgressView("Checking login...")
                     } else if appViewModel.isAuthenticated {
-                        MainTabView()
+                        MainTabView(appViewModel: appViewModel)
                     } else {
                         LoginView()
                     }
@@ -54,7 +60,7 @@ struct ContentView: View {
                     if appViewModel.isLoading {
                         ProgressView("Checking login...")
                     } else if appViewModel.isAuthenticated {
-                        MainTabView()
+                        MainTabView(appViewModel: appViewModel)
                     } else {
                         LoginView()
                     }

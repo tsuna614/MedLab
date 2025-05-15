@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct UserProfileCard: View {
+    @EnvironmentObject var appViewModel: AppViewModel
     let user: User?
     
     var body: some View {
@@ -44,7 +45,7 @@ struct UserProfileCard: View {
             }
 
             NavigationLink {
-                EditProfileView(user: user)
+                EditProfileView(viewModel: EditProfileViewModel(user: user, appViewModel: appViewModel))
             } label: {
                 Text("Edit Profile")
                     .font(.headline)

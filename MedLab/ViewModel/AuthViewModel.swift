@@ -87,7 +87,7 @@ class AuthViewModel: ObservableObject {
         
         Task {
             do {
-                let response: User = try await authService.register(user: user, password: password)
+                let _: User = try await authService.register(user: user, password: password) // use _ because we don't need to use the response
                 login(completion: completion)
             } catch {
                 self.errorMessage = error.localizedDescription

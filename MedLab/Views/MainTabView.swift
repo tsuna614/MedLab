@@ -12,7 +12,9 @@ struct MainTabView: View {
     @StateObject private var cartViewModel: CartViewModel
     @StateObject private var orderViewModel: OrderViewModel
     
-    init() {
+    private let appViewModel: AppViewModel
+    
+    init(appViewModel: AppViewModel) {
         // Api client
         let apiClientInstance = ApiClient(baseURLString: "http://localhost:3000")
         
@@ -21,7 +23,7 @@ struct MainTabView: View {
         let orderServiceInstance = OrderService(apiClient: apiClientInstance)
 
         // Create VM instance
-        let appVMInstance = AppViewModel()
+//        let appVMInstance = AppViewModel()
         let cartVMInstance = CartViewModel(cartService: cartServiceInstance)
         
         // View Models
@@ -29,8 +31,10 @@ struct MainTabView: View {
         _orderViewModel = StateObject(wrappedValue: OrderViewModel(
             orderService: orderServiceInstance,
             cartViewModel: cartVMInstance,
-            appViewModel: appVMInstance
+            appViewModel: appViewModel
         ))
+        
+        self.appViewModel = appViewModel
     }
     
     var body: some View {
