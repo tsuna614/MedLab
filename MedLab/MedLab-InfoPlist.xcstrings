@@ -54,6 +54,18 @@
           }
         }
       }
+    },
+    "NSCameraUsageDescription" : {
+      "comment" : "Privacy - Camera Usage Description",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "MedLab needs access to your camera to take pictures of medicine boxes for identification"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

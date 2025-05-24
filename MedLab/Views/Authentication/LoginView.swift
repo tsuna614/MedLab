@@ -14,7 +14,7 @@ struct LoginView: View {
 
     init() {
         // Temporary placeholder, real init done in body
-        let apiClientInstance = ApiClient(baseURLString: "http://localhost:3000")
+        let apiClientInstance = ApiClient(baseURLString: base_url)
         let authServiceInstance = AuthService(apiClient: apiClientInstance)
         _authService = StateObject(wrappedValue: authServiceInstance)
         _viewModel = StateObject(wrappedValue: AuthViewModel(

@@ -17,7 +17,7 @@ struct ContentView: View {
     
     init() {
         // Api client
-        let apiClientInstance = ApiClient(baseURLString: "http://localhost:3000")
+        let apiClientInstance = ApiClient(baseURLString: base_url)
         
         // Services
         let userServiceInstance = UserService(apiClient: apiClientInstance)

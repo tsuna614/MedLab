@@ -391,6 +391,15 @@
         }
       }
     },
+    "AI Chatbot / Message Screen" : {
+
+    },
+    "AI Consultation" : {
+
+    },
+    "AI Powered Tools" : {
+
+    },
     "Already have an account? Sign in" : {
       "localizations" : {
         "de" : {
@@ -1035,6 +1044,15 @@
         }
       }
     },
+    "Classify Medicine" : {
+
+    },
+    "Classifying..." : {
+
+    },
+    "Confidence: %@" : {
+
+    },
     "Confirmation" : {
       "localizations" : {
         "de" : {
@@ -1174,6 +1192,7 @@
       }
     },
     "Counter: %lld" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1266,6 +1285,7 @@
       }
     },
     "Decrement" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1679,6 +1699,9 @@
         }
       }
     },
+    "Error: %@" : {
+
+    },
     "Estimated Tax" : {
       "localizations" : {
         "de" : {
@@ -1863,6 +1886,9 @@
         }
       }
     },
+    "From Library" : {
+
+    },
     "Help Center" : {
       "localizations" : {
         "de" : {
@@ -1956,6 +1982,7 @@
       }
     },
     "Increment" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2507,6 +2534,15 @@
         }
       }
     },
+    "Medicine Box Classifier" : {
+
+    },
+    "Medicine Classifier Screen" : {
+
+    },
+    "Medicine Identifier" : {
+
+    },
     "Melatonin, herbal teas, sleep masks" : {
       "localizations" : {
         "de" : {
@@ -2554,6 +2590,7 @@
       }
     },
     "Message" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3519,6 +3556,9 @@
         }
       }
     },
+    "Prediction:" : {
+
+    },
     "Prescription Required" : {
       "localizations" : {
         "de" : {
@@ -4163,6 +4203,9 @@
         }
       }
     },
+    "Select or Take an Image" : {
+
+    },
     "Settings" : {
       "localizations" : {
         "de" : {
@@ -4668,6 +4711,9 @@
           }
         }
       }
+    },
+    "Take Photo" : {
+
     },
     "Tax" : {
       "localizations" : {

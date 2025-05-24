@@ -54,7 +54,8 @@ struct MainTabView: View {
                     Label("Order", systemImage: "text.document.fill")
                 }
             
-            MessageView()
+//            MessageView()
+            GuideView()
                 .tabItem {
                     Label("Chat", systemImage: "text.bubble.fill")
                 }
