@@ -48,7 +48,7 @@ class OrderService: OrderServicing, ObservableObject {
         )
         
         return try await apiClient.request(
-            endpoint: .createOrder(orderData: requestBody),
+            endpoint: .createOrder,
             body: requestBody,
             responseType: CreateOrderResponse.self
         )

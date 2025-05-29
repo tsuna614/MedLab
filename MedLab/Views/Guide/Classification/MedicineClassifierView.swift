@@ -137,9 +137,3 @@ struct MedicineClassifierView: View {
         .navigationTitle("Classify Medicine")
     }
 }
-//
-//#Preview {
-//    NavigationStack {
-//        MedicineClassifierView()
-//    }
-//}

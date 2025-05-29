@@ -14,7 +14,7 @@ struct ProductListView: View {
     var category: String?
     
     init(category: String? = nil) {
-        let productServiceInstance = ProductService(apiClient: ApiClient(baseURLString: "http://localhost:3000"))
+        let productServiceInstance = ProductService(apiClient: ApiClient(baseURLString: base_url))
 //        _productService = StateObject(wrappedValue: productServiceInstance)
         _viewModel = StateObject(wrappedValue: ProductViewModel(category: category, productService: productServiceInstance))
 //        viewModel = ProductViewModel(category: category)

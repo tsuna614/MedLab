@@ -12,6 +12,10 @@ enum ApiEndpoint {
     case login
     case register
     
+    // User Endpoints
+    case fetchUser
+    case updateUser
+    
     // Cart Endpoints
     case getCart
     case addCartItem(productId: String, quantity: Int)
@@ -19,17 +23,17 @@ enum ApiEndpoint {
     case removeCartItem(productId: String)
     case clearCart
 
-    // Product Endpoints (NEW)
+    // Product Endpoints
     case getProducts(page: Int?, limit: Int?, category: String?)
     case getProductDetail(productId: String) // Fetch details for one product
 
-    // Add other endpoints as needed (e.g., auth, orders)
+    // Order endpoints
     case getOrders
-    case createOrder(orderData: CreateOrderRequest)
+    case createOrder
     
-    // User Endpoints
-    case fetchUser
-    case updateUser
+    // Message endpoints
+    case fetchMessage
+    case generateMessage
 
     // Computed properties to define path and method
     var path: String {
@@ -65,17 +69,19 @@ enum ApiEndpoint {
         // User Paths
         case .fetchUser, .updateUser:
             return "/users"
+            
+        // Message paths
+        case .fetchMessage, .generateMessage:
+            return "/messages"
         }
-        
-        
     }
 
     var method: String {
         switch self {
         // Cart Methods
-        case .getCart, .getProductDetail, .getProducts, .getOrders, .fetchUser:
+        case .getCart, .getProductDetail, .getProducts, .getOrders, .fetchUser, .fetchMessage:
             return "GET"
-        case .addCartItem, .createOrder, .login, .register:
+        case .addCartItem, .createOrder, .login, .register, .generateMessage:
             return "POST"
         case .updateCartItemQuantity, .updateUser:
             return "PUT"
@@ -116,7 +122,9 @@ enum ApiEndpoint {
                 .getOrders,
                 .createOrder,
                 .fetchUser,
-                .updateUser:
+                .updateUser,
+                .fetchMessage,
+                .generateMessage:
             return true
         }
     }
