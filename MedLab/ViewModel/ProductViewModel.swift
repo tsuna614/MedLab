@@ -34,7 +34,7 @@ class ProductViewModel: ObservableObject {
     
     func loadMoreProducts() async {
         guard !isLoading && hasMore else { return }
-        print("\nLoading")
+        print("\nProductViewModel: Loading more products")
         isLoading = true
         
         do {

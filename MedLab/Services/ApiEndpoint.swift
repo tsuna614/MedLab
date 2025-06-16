@@ -34,6 +34,9 @@ enum ApiEndpoint {
     // Message endpoints
     case fetchMessage
     case generateMessage
+    
+    // Doctor endpoints
+    case getDoctors(page: Int?, limit: Int?)
 
     // Computed properties to define path and method
     var path: String {
@@ -63,12 +66,18 @@ enum ApiEndpoint {
             return "/products/\(productId)" // Standard path for a specific resource
             
         // Order Paths
-        case .getOrders, .createOrder:
+        case .createOrder:
             return "/orders"
+        case .getOrders:
+            return "/orders/getAllUserOrder"
             
         // User Paths
         case .fetchUser, .updateUser:
             return "/users"
+            
+        // Doctor Paths
+        case .getDoctors:
+            return "/doctors"
             
         // Message paths
         case .fetchMessage, .generateMessage:
@@ -79,7 +88,7 @@ enum ApiEndpoint {
     var method: String {
         switch self {
         // Cart Methods
-        case .getCart, .getProductDetail, .getProducts, .getOrders, .fetchUser, .fetchMessage:
+        case .getCart, .getProductDetail, .getProducts, .getOrders, .fetchUser, .fetchMessage, .getDoctors:
             return "GET"
         case .addCartItem, .createOrder, .login, .register, .generateMessage:
             return "POST"
@@ -99,6 +108,13 @@ enum ApiEndpoint {
             if let category = category, !category.isEmpty { items.append(URLQueryItem(name: "category", value: category)) }
 //            if let searchTerm = searchTerm, !searchTerm.isEmpty { items.append(URLQueryItem(name: "search", value: searchTerm)) } // Assuming "search" is the query param name
             return items.isEmpty ? nil : items
+        case .getDoctors(let page, let limit):
+            var items: [URLQueryItem] = []
+            if let page = page { items.append(URLQueryItem(name: "page", value: String(page))) }
+            if let limit = limit { items.append(URLQueryItem(name: "limit", value: String(limit))) }
+            items.append(URLQueryItem(name: "isVisible", value: String("true")))
+            return items.isEmpty ? nil : items
+        
         default:
             return nil
         }
@@ -110,7 +126,8 @@ enum ApiEndpoint {
                 .login,
                 .register,
                 .getProducts,
-                .getProductDetail:
+                .getProductDetail,
+                .getDoctors:
             return false
             
         case
@@ -130,24 +147,13 @@ enum ApiEndpoint {
     }
 }
 
-// --- You would also need corresponding Response Structs ---
-
-// Example for GET /api/products (adjust to match your actual API response)
-struct BackendProductListResponse: Codable {
-    // Assuming your API returns an array directly, or wraps it in a structure
-    let products: [BackendProductSummary] // Or maybe the full Product model if appropriate
-    // Add pagination info if your API includes it (e.g., totalPages, currentPage)
-}
-
-struct BackendProductSummary: Codable { // Or use your full Product model if API returns it
-    let id: String // Assuming API uses "_id" mapped via CodingKeys in full model
-    let name: String
-    let price: Double
-    let imageUrl: String?
-    // Include other summary fields needed for list display
-}
-
-// Example for GET /api/products/{productId}
-// Often, this might just return your full `Product` model,
-// assuming it's Codable and maps correctly to the API JSON.
-// If not, create a specific `BackendProductDetailResponse` struct.
+//struct BackendProductListResponse: Codable {
+//    let products: [BackendProductSummary]
+//}
+//
+//struct BackendProductSummary: Codable {
+//    let id: String
+//    let name: String
+//    let price: Double
+//    let imageUrl: String?
+//}

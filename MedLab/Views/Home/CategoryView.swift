@@ -13,6 +13,12 @@ struct CategoryView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
+                Text("Category List")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding([.top, .leading, .trailing])
+                
                 LazyVGrid(columns: columns, spacing: 20) {
                     ForEach(ProductCategory.allCases) { category in
                         CategoryCard(category: category)
