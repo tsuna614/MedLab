@@ -48,7 +48,11 @@ class AuthViewModel: ObservableObject {
                 completion(true)
             } catch {
                 print("ERROR!!! \(error.localizedDescription)")
-                self.errorMessage = error.localizedDescription
+                if error.localizedDescription == "The operation couldn’t be completed. (MedLab.ApiClientError error 5.)" {
+                    self.errorMessage = "Invalid email or password" // NOTE: implement proper error handling later
+                } else {
+                    self.errorMessage = error.localizedDescription
+                }
                 self.isLoading = false
                 completion(false)
             }
@@ -81,7 +85,7 @@ class AuthViewModel: ObservableObject {
             lastName: lastName,
             number: number.isEmpty ? nil : number,
             userType: nil,
-            receiptsId: nil,
+            usedVouchersCode: nil,
             address: nil
         )
         

@@ -73,7 +73,8 @@ class OrderViewModel: ObservableObject {
     
     func placeOrder(
         shippingAddress: ShippingAddress,
-        paymentDetails: String?
+        paymentDetails: String?,
+        discountPercentage: Int
     ) async {
         guard !isPlacingOrder else {
             print("OrderViewModel: Already placing order.")
@@ -117,7 +118,8 @@ class OrderViewModel: ObservableObject {
             let createOrderResponse = try await orderService.placeOrder( // Use the injected service
                 items: itemsForRequest,
                 shippingAddress: shippingAddress,
-                paymentDetails: paymentDetails
+                paymentDetails: paymentDetails,
+                discountPercentage: Double(discountPercentage)
             )
             
             // --- SUCCESS ---

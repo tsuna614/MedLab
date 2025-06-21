@@ -74,7 +74,7 @@ struct ProfileView: View {
                 .padding(.bottom)
             }
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("Profile")
+            .navigationTitle(Text("Profile" as LocalizedStringKey))
             .alert("Confirmation", isPresented: $showingSignOutAlert) {
                 Button("Cancel", role: .cancel) {
                     showingSignOutAlert = false

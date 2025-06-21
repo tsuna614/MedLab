@@ -295,15 +295,22 @@ struct ShippingAddressView: View {
 }
 
 struct OrderTotalsView: View {
-     let order: Order
+    let order: Order
+    
+    var discountMultiplier: Double {
+        order.discountPercentage / 100
+    }
 
      var body: some View {
           VStack(spacing: 5) {
-               HStack { Text("Subtotal"); Spacer(); Text(order.items.reduce(0){$0 + $1.subtotal}, format: .currency(code: "USD")) }
-               HStack { Text("Shipping"); Spacer(); Text(order.shippingCost, format: .currency(code: "USD")) }
-               HStack { Text("Tax"); Spacer(); Text(order.taxAmount, format: .currency(code: "USD")) }
-               Divider().padding(.vertical, 4)
-               HStack { Text("Total").bold(); Spacer(); Text(order.totalAmount, format: .currency(code: "USD")).bold() }
+              HStack { Text("Subtotal"); Spacer(); Text(order.items.reduce(0){$0 + $1.subtotal}, format: .currency(code: "USD")) }
+              HStack { Text("Shipping"); Spacer(); Text(order.shippingCost, format: .currency(code: "USD")) }
+              HStack { Text("Tax"); Spacer(); Text(order.taxAmount, format: .currency(code: "USD")) }
+              HStack { Text("Discount Percentage"); Spacer(); Text(discountMultiplier, format: .percent)}
+
+              Divider().padding(.vertical, 4)
+              
+              HStack { Text("Total").bold(); Spacer(); Text(order.totalAmount, format: .currency(code: "USD")).bold() }
           }
           .font(.subheadline)
      }

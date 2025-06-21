@@ -8,72 +8,51 @@
 import SwiftUI
 
 struct DoctorListView: View {
-    // Use @StateObject if this view owns the ViewModel,
-    // or @EnvironmentObject if it's provided by an ancestor (e.g., if this
-    // is a tab in MainTabView and DoctorViewModel is created in ContentView/MainTabView).
-    // For this example, assuming DoctorListView creates its own for simplicity of this file.
-    // In a real app, consider where this VM's lifecycle should be managed.
+//    @EnvironmentObject var doctorService: DoctorService
     @StateObject private var viewModel: DoctorViewModel
 
-    // Inject the DoctorService when creating this view
     init() {
         let doctorServiceInstance = DoctorService(apiClient: ApiClient(baseURLString: base_url))
         _viewModel = StateObject(wrappedValue: DoctorViewModel(doctorService: doctorServiceInstance))
+        //        let tempService = DoctorService(apiClient: ApiClient(baseURLString: "placeholder"))
+        //        _viewModel = StateObject(wrappedValue: DoctorViewModel(doctorService: tempService))
     }
 
     var body: some View {
-        // If this view is part of a larger navigation structure (e.g., a tab),
-        // the NavigationStack might be provided by a parent.
-        // If it's standalone or the root of its navigation, include it here.
         NavigationStack {
-            ZStack { // For overlaying ProgressView during initial load
+            ZStack {
                 ScrollView {
-                    // Main content: Loading, Empty, Error, or Doctor List
                     contentView
                 }
-                // Optional: A more global error display if needed
-                // if let error = viewModel.errorMessage { ErrorBannerView(message: error) }
             }
             .navigationTitle("Find a Doctor")
-            // .navigationBarTitleDisplayMode(.inline) // Optional
             .toolbar {
-                // Example: Add a filter button or other actions
-                // ToolbarItem(placement: .navigationBarTrailing) {
-                //     Button { print("Filter tapped") } label: { Image(systemName: "slider.horizontal.3") }
-                // }
             }
             .onAppear {
-                // Load initial doctors if the list is empty and not already loading
+//                if viewModel.doctorService !== self.doctorService {
+//                    _viewModel = StateObject(wrappedValue: DoctorViewModel(doctorService: self.doctorService))
+//                }
                 if viewModel.doctors.isEmpty && !viewModel.isLoading {
                     Task {
                         await viewModel.loadInitialDoctors()
                     }
                 }
             }
-            // Alternative: Use .task for initial load tied to view lifecycle
-            // .task {
-            //    if viewModel.doctors.isEmpty { await viewModel.loadInitialDoctors() }
-            // }
         }
     }
 
-    // Extracted content view logic
     @ViewBuilder
     private var contentView: some View {
         if viewModel.isLoading && viewModel.doctors.isEmpty {
-            // Initial loading state
             ProgressView("Loading doctors...")
                 .padding(.top, 50) // Give some space
         } else if let errorMessage = viewModel.errorMessage, viewModel.doctors.isEmpty {
-            // Error state when no doctors are loaded
             ErrorStateView(message: errorMessage) {
                 Task { await viewModel.loadInitialDoctors() } // Retry action
             }
         } else if viewModel.doctors.isEmpty {
-            // Empty state (after successful load but no results)
             EmptyStateView(message: "No doctors found matching your criteria.")
         } else {
-            // Doctor list with "load more" functionality
             doctorListWithPagination
         }
     }
@@ -89,33 +68,28 @@ struct DoctorListView: View {
                 .buttonStyle(PlainButtonStyle()) // To make the whole card tappable
             }
 
-            // "Load More" indicator / trigger
             if viewModel.isLoadingMore {
                 ProgressView()
                     .padding()
             } else if viewModel.hasMoreDoctors {
-                // Invisible element at the end of the list to trigger loading more
                 Color.clear
                     .frame(height: 50)
                     .onAppear {
-                        // Trigger load more when this element appears
                         Task {
                             await viewModel.loadMoreDoctors()
                         }
                     }
             } else if !viewModel.doctors.isEmpty {
-                // No more doctors to load
                 Text("You've reached the end.")
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .padding()
             }
         }
-        .padding() // Padding for the LazyVStack
+        .padding()
     }
 }
 
-// --- Helper Subviews for DoctorListView ---
 
 struct DoctorCardView: View {
     let doctor: Doctor
@@ -166,7 +140,7 @@ struct DoctorCardView: View {
 //                    .font(.caption)
 //                }
             }
-            Spacer() // Pushes content to the left
+            Spacer()
         }
         .padding()
         .background(Color(.secondarySystemGroupedBackground))
@@ -244,32 +218,3 @@ class MockDoctorService: DoctorServicing {
         )
     }
 }
-
-//// Dummy DoctorListResponse for preview service
-//struct DoctorListResponse: Codable {
-//    let doctors: [Doctor]
-//    let totalPages: Int?
-//    let currentPage: Int?
-//    let totalItems: Int? // For total count
-//}
-//
-//// Helper extension for ceiling division
-//extension Double {
-//    func ceil() -> Double {
-//        return Foundation.ceil(self)
-//    }
-//     func toInt() -> Int {
-//        return Int(self)
-//    }
-//}
-//
-//
-//#Preview {
-//    // DoctorListView needs DoctorService injected
-//    let mockService = MockDoctorService()
-//    return NavigationView { // Often part of a navigation flow
-//        DoctorListView(doctorService: mockService)
-//            // Add other environment objects if DoctorDetailView or other subviews need them
-//            // .environmentObject(AppViewModel())
-//    }
-//}

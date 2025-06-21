@@ -13,6 +13,9 @@ struct ContentView: View {
     
     // Localization Settings
     @StateObject private var languageSettings = LanguageSettingsObserver()
+    
+//    // Initialize services
+//    @StateObject var doctorService: DoctorService
 
     
     init() {
@@ -21,6 +24,8 @@ struct ContentView: View {
         
         // Services
         let userServiceInstance = UserService(apiClient: apiClientInstance)
+//        let doctorServiceInstance = DoctorService(apiClient: apiClientInstance)
+//        _doctorService = StateObject(wrappedValue: doctorServiceInstance)
         
         // Create VM instance
         let appVMInstance = AppViewModel(userService: userServiceInstance)
@@ -31,54 +36,94 @@ struct ContentView: View {
     
     var body: some View {
         
-        if languageSettings.currentLocaleIdentifier == "default" {
-            ZStack {
-                Group {
-                    if appViewModel.isLoading {
-                        ProgressView("Checking login...")
-                    } else if appViewModel.isAuthenticated {
-                        MainTabView(appViewModel: appViewModel)
-                    } else {
-                        LoginView()
-                    }
-                }
-                
-                if snackbarViewModel.showSnackbar {
-                    VStack {
-                        Spacer()
-                        SnackbarView(message: snackbarViewModel.message)
-                    }
-                    .padding(.bottom, 50)
+        let currentLocale: Locale = {
+            if languageSettings.currentLocaleIdentifier == "default" || languageSettings.currentLocaleIdentifier.isEmpty {
+                // If "default" or empty, don't override, let system decide or use app's base
+                // Or, if you have a specific default you want to enforce:
+                // return Locale(identifier: "en") // Example default
+                return Locale.current // Relies on system's current locale as the base
+            } else {
+                return Locale(identifier: languageSettings.currentLocaleIdentifier)
+            }
+        }()
+        
+        ZStack {
+            Group {
+                if appViewModel.isLoading {
+                    ProgressView("Checking login...")
+                } else if appViewModel.isAuthenticated {
+                    MainTabView(appViewModel: appViewModel)
+                } else {
+                    LoginView()
                 }
             }
-            .environmentObject(appViewModel)
-            .environmentObject(snackbarViewModel)
-            .environmentObject(languageSettings)
-        } else {
-            ZStack {
-                Group {
-                    if appViewModel.isLoading {
-                        ProgressView("Checking login...")
-                    } else if appViewModel.isAuthenticated {
-                        MainTabView(appViewModel: appViewModel)
-                    } else {
-                        LoginView()
-                    }
+            
+            if snackbarViewModel.showSnackbar {
+                VStack {
+                    Spacer()
+                    SnackbarView(message: snackbarViewModel.message)
                 }
-                
-                if snackbarViewModel.showSnackbar {
-                    VStack {
-                        Spacer()
-                        SnackbarView(message: snackbarViewModel.message)
-                    }
-                    .padding(.bottom, 50)
-                }
+                .padding(.bottom, 50)
             }
-            .environmentObject(appViewModel)
-            .environmentObject(snackbarViewModel)
-            .environment(\.locale, Locale(identifier: languageSettings.currentLocaleIdentifier))
-            .environmentObject(languageSettings)
         }
+        .environmentObject(appViewModel)
+        .environmentObject(snackbarViewModel)
+        .environmentObject(languageSettings)
+//        .environmentObject(doctorService)
+        // .environment(\.locale, Locale(identifier: languageSettings.currentLocaleIdentifier))
+        .environment(\.locale, currentLocale)
+        
+//        if languageSettings.currentLocaleIdentifier == "default" {
+//            ZStack {
+//                Group {
+//                    if appViewModel.isLoading {
+//                        ProgressView("Checking login...")
+//                    } else if appViewModel.isAuthenticated {
+//                        MainTabView(appViewModel: appViewModel)
+//                    } else {
+//                        LoginView()
+//                    }
+//                }
+//                
+//                if snackbarViewModel.showSnackbar {
+//                    VStack {
+//                        Spacer()
+//                        SnackbarView(message: snackbarViewModel.message)
+//                    }
+//                    .padding(.bottom, 50)
+//                }
+//            }
+//            .environmentObject(appViewModel)
+//            .environmentObject(snackbarViewModel)
+//            .environmentObject(languageSettings)
+//            .environmentObject(doctorService)
+//        } else {
+//            ZStack {
+//                Group {
+//                    if appViewModel.isLoading {
+//                        ProgressView("Checking login...")
+//                    } else if appViewModel.isAuthenticated {
+//                        MainTabView(appViewModel: appViewModel)
+//                    } else {
+//                        LoginView()
+//                    }
+//                }
+//                
+//                if snackbarViewModel.showSnackbar {
+//                    VStack {
+//                        Spacer()
+//                        SnackbarView(message: snackbarViewModel.message)
+//                    }
+//                    .padding(.bottom, 50)
+//                }
+//            }
+//            .environmentObject(appViewModel)
+//            .environmentObject(snackbarViewModel)
+//            .environmentObject(languageSettings)
+//            .environmentObject(doctorService)
+//            // .environment(\.locale, Locale(identifier: languageSettings.currentLocaleIdentifier))
+//            .environment(\.locale, currentLocale)
+//        }
     }
 }
 

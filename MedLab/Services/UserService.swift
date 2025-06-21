@@ -13,7 +13,7 @@ struct UpdateUserRequest: Encodable {
     let lastName: String
     let number: String?
     let userType: String?
-    let receiptsId: [String]?
+    let usedVouchersCode: [String]?
     let address: Address?
 }
 
@@ -67,7 +67,7 @@ class UserService: UserServicing, ObservableObject {
             lastName: user.lastName,
             number: user.number,
             userType: user.userType,
-            receiptsId: user.receiptsId,
+            usedVouchersCode: user.usedVouchersCode,
             address: user.address
         )
         

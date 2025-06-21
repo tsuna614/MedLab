@@ -23,7 +23,7 @@ struct User: Codable {
     let lastName: String
     let number: String?
     let userType: String?
-    let receiptsId: [String]?
+    let usedVouchersCode: [String]?
     let address: Address?
     
     enum CodingKeys: String, CodingKey {
@@ -33,7 +33,7 @@ struct User: Codable {
         case lastName
         case number
         case userType
-        case receiptsId
+        case usedVouchersCode
         case address
     }
 }

@@ -37,6 +37,9 @@ enum ApiEndpoint {
     
     // Doctor endpoints
     case getDoctors(page: Int?, limit: Int?)
+    
+    // Voucher endpoints
+    case getVouchers
 
     // Computed properties to define path and method
     var path: String {
@@ -79,6 +82,10 @@ enum ApiEndpoint {
         case .getDoctors:
             return "/doctors"
             
+        // Voucher Paths
+        case .getVouchers:
+            return "/vouchers"
+            
         // Message paths
         case .fetchMessage, .generateMessage:
             return "/messages"
@@ -88,7 +95,7 @@ enum ApiEndpoint {
     var method: String {
         switch self {
         // Cart Methods
-        case .getCart, .getProductDetail, .getProducts, .getOrders, .fetchUser, .fetchMessage, .getDoctors:
+        case .getCart, .getProductDetail, .getProducts, .getOrders, .fetchUser, .fetchMessage, .getDoctors, .getVouchers:
             return "GET"
         case .addCartItem, .createOrder, .login, .register, .generateMessage:
             return "POST"
@@ -114,6 +121,12 @@ enum ApiEndpoint {
             if let limit = limit { items.append(URLQueryItem(name: "limit", value: String(limit))) }
             items.append(URLQueryItem(name: "isVisible", value: String("true")))
             return items.isEmpty ? nil : items
+//        case .getVouchers(let page, let limit):
+//            var items: [URLQueryItem] = []
+//            if let page = page { items.append(URLQueryItem(name: "page", value: String(page))) }
+//            if let limit = limit { items.append(URLQueryItem(name: "limit", value: String(limit))) }
+//            items.append(URLQueryItem(name: "isVisible", value: String("true")))
+//            return items.isEmpty ? nil : items
         
         default:
             return nil
@@ -127,7 +140,8 @@ enum ApiEndpoint {
                 .register,
                 .getProducts,
                 .getProductDetail,
-                .getDoctors:
+                .getDoctors,
+                .getVouchers:
             return false
             
         case

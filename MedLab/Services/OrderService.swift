@@ -16,6 +16,7 @@ struct CreateOrderRequest: Encodable {
     let items: [CreateOrderItemRequest]
     let shippingAddress: ShippingAddress
     let paymentMethodDetails: String?
+    let discountPercentage: Double?
 }
 
 struct CreateOrderResponse: Codable {
@@ -29,7 +30,7 @@ protocol OrderServicing {
 //    func updateItemQuantity(productId: String, quantity: Int) async throws -> CartResponse
 //    func removeItem(productId: String) async throws -> CartResponse
 //    func clearCart() async throws
-    func placeOrder(items: [CreateOrderItemRequest], shippingAddress: ShippingAddress, paymentDetails: String?) async throws -> CreateOrderResponse
+    func placeOrder(items: [CreateOrderItemRequest], shippingAddress: ShippingAddress, paymentDetails: String?, discountPercentage: Double?) async throws -> CreateOrderResponse
     func fetchUserOrder() async throws -> [Order]
 }
 
@@ -40,11 +41,12 @@ class OrderService: OrderServicing, ObservableObject {
         self.apiClient = apiClient
     }
     
-    func placeOrder(items: [CreateOrderItemRequest], shippingAddress: ShippingAddress, paymentDetails: String?) async throws -> CreateOrderResponse {
+    func placeOrder(items: [CreateOrderItemRequest], shippingAddress: ShippingAddress, paymentDetails: String?, discountPercentage: Double?) async throws -> CreateOrderResponse {
         let requestBody = CreateOrderRequest(
             items: items,
             shippingAddress: shippingAddress,
-            paymentMethodDetails: paymentDetails
+            paymentMethodDetails: paymentDetails,
+            discountPercentage: discountPercentage
         )
         
         return try await apiClient.request(

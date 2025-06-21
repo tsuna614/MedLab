@@ -58,6 +58,7 @@ struct Order: Codable, Identifiable {
     let totalAmount: Double
     let shippingCost: Double
     let taxAmount: Double
+    let discountPercentage: Double
     let status: OrderStatus
     let shippingAddress: ShippingAddress
     let paymentMethodDetails: String?
@@ -73,6 +74,7 @@ struct Order: Codable, Identifiable {
         case totalAmount
         case shippingCost
         case taxAmount
+        case discountPercentage
         case status
         case shippingAddress
         case paymentMethodDetails

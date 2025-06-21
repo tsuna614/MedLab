@@ -25,7 +25,7 @@ struct RegisterRequest: Codable {
     let lastName: String
     let number: String?
     let userType: String?
-    let receiptsId: [String]?
+    let usedVouchersCode: [String]?
     let password: String
 }
 
@@ -60,7 +60,7 @@ class AuthService: AuthServicing, ObservableObject {
             lastName: user.lastName,
             number: user.number,
             userType: user.number,
-            receiptsId: user.receiptsId,
+            usedVouchersCode: user.usedVouchersCode,
             password: password
         )
         
@@ -81,7 +81,7 @@ class AuthService: AuthServicing, ObservableObject {
 //            lastName: user.lastName,
 //            number: user.number,
 //            userType: user.userType,
-//            receiptsId: user.receiptsId,
+//            usedVouchersCode: user.usedVouchersCode,
 //            password: password
 //        )
 //        
