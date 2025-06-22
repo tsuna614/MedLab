@@ -115,7 +115,7 @@ struct CheckoutView: View {
                         await orderViewModel.placeOrder(
                             shippingAddress: currentShippingAddress,
                             paymentDetails: paymentInfo,
-                            discountPercentage: voucherViewModel.selectedVoucher?.discount ?? 0
+                            selectedVoucher: voucherViewModel.selectedVoucher
                         )
                         if orderViewModel.orderPlacedSuccessfully {
                             navigateToOrderConfirmation = true

@@ -40,6 +40,7 @@ enum ApiEndpoint {
     
     // Voucher endpoints
     case getVouchers
+    case redeemVoucher
 
     // Computed properties to define path and method
     var path: String {
@@ -85,6 +86,8 @@ enum ApiEndpoint {
         // Voucher Paths
         case .getVouchers:
             return "/vouchers"
+        case .redeemVoucher:
+            return "/vouchers/redeemVoucher"
             
         // Message paths
         case .fetchMessage, .generateMessage:
@@ -97,7 +100,7 @@ enum ApiEndpoint {
         // Cart Methods
         case .getCart, .getProductDetail, .getProducts, .getOrders, .fetchUser, .fetchMessage, .getDoctors, .getVouchers:
             return "GET"
-        case .addCartItem, .createOrder, .login, .register, .generateMessage:
+        case .addCartItem, .createOrder, .login, .register, .generateMessage, .redeemVoucher:
             return "POST"
         case .updateCartItemQuantity, .updateUser:
             return "PUT"
@@ -155,7 +158,8 @@ enum ApiEndpoint {
                 .fetchUser,
                 .updateUser,
                 .fetchMessage,
-                .generateMessage:
+                .generateMessage,
+                .redeemVoucher:
             return true
         }
     }

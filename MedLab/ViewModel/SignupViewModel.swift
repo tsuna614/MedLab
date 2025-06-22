@@ -54,7 +54,7 @@ class SignupViewModel: ObservableObject {
             lastName: lastName,
             number: number.isEmpty ? nil : number,
             userType: nil,
-            usedVouchersCode: nil,
+            usedVouchersCode: [],
             address: nil
         )
         

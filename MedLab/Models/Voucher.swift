@@ -16,6 +16,14 @@ struct Voucher: Codable, Identifiable {
     let expiryDate: Date
     let isVisible: Bool
     
+    var isExpired: Bool {
+        if self.expiryDate < Date() {
+            return true
+        } else {
+            return false
+        }
+    }
+    
 
     enum CodingKeys: String, CodingKey {
         case id = "_id"

@@ -24,6 +24,14 @@ struct CreateOrderResponse: Codable {
     let order: Order
 }
 
+struct RedeemVoucherRequest: Codable {
+    let voucherCode: String
+}
+
+struct RedeemVoucherResponse: Codable {
+    let message: String
+}
+
 protocol OrderServicing {
 //    func getCart() async throws -> CartResponse
 //    func addItem(productId: String, quantity: Int) async throws -> CartResponse
@@ -32,6 +40,7 @@ protocol OrderServicing {
 //    func clearCart() async throws
     func placeOrder(items: [CreateOrderItemRequest], shippingAddress: ShippingAddress, paymentDetails: String?, discountPercentage: Double?) async throws -> CreateOrderResponse
     func fetchUserOrder() async throws -> [Order]
+    func redeemVoucher(code: String) async throws -> RedeemVoucherResponse
 }
 
 class OrderService: OrderServicing, ObservableObject {
@@ -61,6 +70,16 @@ class OrderService: OrderServicing, ObservableObject {
             endpoint: .getOrders,
             body: Optional<EmptyBody>.none,
             responseType: [Order].self
+        )
+    }
+    
+    func redeemVoucher(code: String) async throws -> RedeemVoucherResponse {
+        let requestBody = RedeemVoucherRequest(voucherCode: code)
+        
+        return try await apiClient.request(
+            endpoint: .redeemVoucher,
+            body: requestBody,
+            responseType: RedeemVoucherResponse.self
         )
     }
 }

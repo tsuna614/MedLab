@@ -23,7 +23,7 @@ struct User: Codable {
     let lastName: String
     let number: String?
     let userType: String?
-    let usedVouchersCode: [String]?
+    var usedVouchersCode: [String] = []
     let address: Address?
     
     enum CodingKeys: String, CodingKey {

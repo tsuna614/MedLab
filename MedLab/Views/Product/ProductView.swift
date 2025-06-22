@@ -12,7 +12,7 @@ struct ProductView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                TopBar(title: "Product")
+                TopBar(title: NSLocalizedString("Product", comment: ""))
                 
                 ScrollView {
                     VStack(alignment: .leading) {

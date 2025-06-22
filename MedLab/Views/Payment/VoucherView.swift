@@ -9,29 +9,13 @@ import SwiftUI
 
 
 struct VoucherView: View {
-//    let availableVouchers: [Voucher]
-//    let onVoucherSelected: (Voucher) -> Void
-//    let onHiddenVoucherApplied: (String) -> Void
 
     @State private var enteredCode: String = ""
     @Environment(\.dismiss) var dismiss
     
     @StateObject var voucherVM: VoucherViewModel
     @EnvironmentObject var snackbarViewModel: SnackBarViewModel
-    
-//    init() {
-//        let voucherServiceInstance = VoucherService(apiClient: ApiClient(baseURLString: base_url))
-//        _voucherVM = StateObject(wrappedValue: VoucherViewModel(voucherService: voucherServiceInstance))
-//    }
-    
-//    init(availableVouchers: [Voucher], onVoucherSelected: @escaping (Voucher) -> Void, onHiddenVoucherApplied: @escaping (String) -> Void) {
-//        self.availableVouchers = availableVouchers
-//        self.onVoucherSelected = onVoucherSelected
-//        self.onHiddenVoucherApplied = onHiddenVoucherApplied
-////        self.voucherVM = voucherVM
-//        let voucherServiceInstance = VoucherService(apiClient: ApiClient(baseURLString: base_url))
-//        _voucherVM = StateObject(wrappedValue: VoucherViewModel(voucherService: voucherServiceInstance))
-//    }
+    @EnvironmentObject var appVM: AppViewModel
 
     private var filteredVouchers: [Voucher] {
         if enteredCode.isEmpty {
@@ -76,7 +60,16 @@ struct VoucherView: View {
                                 VoucherRow(voucher: voucher)
                                     .contentShape(Rectangle())
                                     .onTapGesture {
-                                        selectVoucher(voucher)
+//                                        let isVoucherInvalid = voucher.isExpired || appVM.user?.usedVouchersCode?.contains(voucher.code) == true
+                                        let isVoucherUsed = appVM.user?.usedVouchersCode.contains(voucher.code) ?? false
+                                        let isVoucherInvalid = voucher.isExpired || isVoucherUsed
+
+                                        
+                                        if !isVoucherInvalid {
+                                            selectVoucher(voucher)
+                                        } else {
+                                            snackbarViewModel.showSnackbar(message: "\(voucher.code) is invalid to use")
+                                        }
                                     }
                             }
                         }
@@ -124,6 +117,7 @@ struct VoucherView: View {
 
 struct VoucherRow: View {
     let voucher: Voucher
+    @EnvironmentObject var appVM: AppViewModel
 
     private static var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -167,6 +161,16 @@ struct VoucherRow: View {
                 )
                 .font(.caption)
                 .foregroundColor(.gray)
+                
+                if voucher.isExpired {
+                    Text("Expired")
+                        .font(.footnote)
+                        .foregroundColor(.red)
+                } else if appVM.user?.usedVouchersCode.contains(voucher.code) == true {
+                    Text("Already Used")
+                        .font(.footnote)
+                        .foregroundColor(.red)
+                }
             }
         }
         .padding(.vertical, 8)

@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    " is the best choice for purchasing medicine online" : {
+
+    },
     "%@\n%@\n%@, %@ %@\n%@" : {
       "localizations" : {
         "en" : {
@@ -182,6 +185,12 @@
           }
         }
       }
+    },
+    "%lld%%" : {
+
+    },
+    "%lld%% OFF" : {
+
     },
     "1.0.0" : {
       "localizations" : {
@@ -366,6 +375,9 @@
           }
         }
       }
+    },
+    "Add vouchers" : {
+
     },
     "Address" : {
       "localizations" : {
@@ -569,6 +581,9 @@
         }
       }
     },
+    "Already Used" : {
+
+    },
     "App Version" : {
       "localizations" : {
         "de" : {
@@ -661,6 +676,9 @@
         }
       }
     },
+    "Apply" : {
+
+    },
     "Are you sure you want to sign out?" : {
       "localizations" : {
         "de" : {
@@ -728,6 +746,9 @@
           }
         }
       }
+    },
+    "Available Vouchers" : {
+
     },
     "Beauty Care" : {
       "localizations" : {
@@ -981,6 +1002,9 @@
         }
       }
     },
+    "Category List" : {
+
+    },
     "Category: %@" : {
       "localizations" : {
         "de" : {
@@ -1074,6 +1098,7 @@
       }
     },
     "Chat" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1255,6 +1280,9 @@
         }
       }
     },
+    "Code: %@" : {
+
+    },
     "Confidence: %@" : {
       "localizations" : {
         "ja" : {
@@ -1322,6 +1350,9 @@
           }
         }
       }
+    },
+    "Consult with the pharmacy" : {
+
     },
     "Contact Us" : {
       "localizations" : {
@@ -1647,6 +1678,9 @@
         }
       }
     },
+    "Discount Percentage" : {
+
+    },
     "Don't have an account? Sign up" : {
       "localizations" : {
         "de" : {
@@ -1877,6 +1911,9 @@
         }
       }
     },
+    "Enter voucher code" : {
+
+    },
     "Error" : {
       "localizations" : {
         "ja" : {
@@ -2012,6 +2049,12 @@
           }
         }
       }
+    },
+    "Expired" : {
+
+    },
+    "Expires: " : {
+
     },
     "Expires: %@" : {
       "localizations" : {
@@ -2950,6 +2993,9 @@
         }
       }
     },
+    "MedLab" : {
+
+    },
     "Melatonin, herbal teas, sleep masks" : {
       "localizations" : {
         "de" : {
@@ -3249,6 +3295,12 @@
           }
         }
       }
+    },
+    "No visible vouchers match '%@'.\nTap 'Apply' if it's a hidden code." : {
+
+    },
+    "No vouchers available at the moment." : {
+
     },
     "OK" : {
       "localizations" : {
@@ -4422,6 +4474,9 @@
         }
       }
     },
+    "Remove" : {
+
+    },
     "Reproductive Health" : {
       "localizations" : {
         "de" : {
@@ -4695,6 +4750,9 @@
           }
         }
       }
+    },
+    "Select Voucher" : {
+
     },
     "Settings" : {
       "localizations" : {
@@ -5406,6 +5464,9 @@
         }
       }
     },
+    "Tools" : {
+
+    },
     "Toothpaste, shampoo, deodorant" : {
       "localizations" : {
         "de" : {
@@ -5635,6 +5696,15 @@
           }
         }
       }
+    },
+    "Voucher Applied" : {
+
+    },
+    "Want to get medical advice or book an appointment?" : {
+
+    },
+    "Why " : {
+
     },
     "You've reached the end." : {
       "localizations" : {

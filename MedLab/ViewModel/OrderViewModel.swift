@@ -74,7 +74,7 @@ class OrderViewModel: ObservableObject {
     func placeOrder(
         shippingAddress: ShippingAddress,
         paymentDetails: String?,
-        discountPercentage: Int
+        selectedVoucher: Voucher? = nil
     ) async {
         guard !isPlacingOrder else {
             print("OrderViewModel: Already placing order.")
@@ -119,12 +119,15 @@ class OrderViewModel: ObservableObject {
                 items: itemsForRequest,
                 shippingAddress: shippingAddress,
                 paymentDetails: paymentDetails,
-                discountPercentage: Double(discountPercentage)
+                discountPercentage: Double(selectedVoucher?.discount ?? 0)
             )
             
             // --- SUCCESS ---
             let finalizedOrder = createOrderResponse.order // Get the final order from response
             print("OrderViewModel: Order placed successfully on backend. Order #: \(finalizedOrder.orderNumber)")
+            
+            
+            
             
             // 3. Update Local State on Success
             self.newlyPlacedOrder = finalizedOrder // Store the new order if needed
@@ -132,6 +135,14 @@ class OrderViewModel: ObservableObject {
             self.cartViewModel.clearLocalCartData() // Clear the cart in the CartViewModel
             self.orderPlacedSuccessfully = true // Set flag for UI navigation/updates
             
+            guard let usedVoucher = selectedVoucher else {
+                return
+            }
+            
+            let redeemVoucherResponse = try await orderService.redeemVoucher(code: usedVoucher.code)
+            appViewModel.user?.usedVouchersCode.append(usedVoucher.code)
+//            appViewModel.user?.usedVouchersCode = (appViewModel.user?.usedVouchersCode ?? []) + [code]
+
         } catch let error as ApiClientError {
             // Handle specific API client errors
             print("❌ OrderViewModel: API Error placing order: \(error)")

@@ -33,12 +33,24 @@ struct GuideView: View {
                             GuideLinkRow(
                                 title: "AI Doctor Consultation",
                                 description: "Ask general health questions or get information. Not for diagnosis.",
-                                iconName: "message.badge.circle.fill",
+                                iconName: "message.badge.waveform.fill",
                                 iconColor: .green
                             )
                         }
                     }
                     
+                    Section(header: Text("Consult with the pharmacy").font(.headline)) {
+                        NavigationLink {
+                            MessageView()
+                        } label: {
+                            GuideLinkRow(
+                                title: "Message the pharmacy",
+                                description: "Chat with the pharmacy to get advice or ask questions.",
+                                iconName: "ellipsis.message.fill",
+                                iconColor: .green
+                            )
+                        }
+                    }
                 }
                 .listStyle(.insetGrouped)
             }

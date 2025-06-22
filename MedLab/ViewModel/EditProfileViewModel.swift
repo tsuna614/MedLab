@@ -83,7 +83,7 @@ class EditProfileViewModel: ObservableObject {
             lastName: lastName,
             number: phoneNumber,
             userType: nil,
-            usedVouchersCode: nil,
+            usedVouchersCode: [],
             address: address.isEmpty ? nil : updatedAddress
         )
         

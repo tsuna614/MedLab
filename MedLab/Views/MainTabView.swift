@@ -54,10 +54,9 @@ struct MainTabView: View {
                     Label("Order", systemImage: "text.document.fill")
                 }
             
-//            MessageView()
             GuideView()
                 .tabItem {
-                    Label("Chat", systemImage: "text.bubble.fill")
+                    Label("Tools", systemImage: "apple.writing.tools")
                 }
 
             ProfileView()
