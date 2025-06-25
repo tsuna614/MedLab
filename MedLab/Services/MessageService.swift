@@ -12,7 +12,7 @@ struct GenerateMessageRequest: Encodable {
 }
 
 struct GenerateMessageResponse: Decodable {
-    let response: String
+    let message: String
 }
 
 // --- Model for a single message in the UI ---
@@ -34,11 +34,13 @@ struct FetchMessageResponse: Identifiable, Decodable {
     let id: String
     let userId: String
     let messages: [Message]
+    let adminMessage: [Message]
     
     enum CodingKeys: String, CodingKey {
         case id = "_id"
         case userId
         case messages
+        case adminMessage
     }
 }
 

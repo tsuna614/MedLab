@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct GuideView: View {
+    @EnvironmentObject var viewModel: AppViewModel
     
     var body: some View {
         NavigationStack {
@@ -28,7 +29,7 @@ struct GuideView: View {
                         }
                         
                         NavigationLink {
-                            MessageView()
+                            MessageView(userId: viewModel.user!.id, isAIChatEnabled: true)
                         } label: {
                             GuideLinkRow(
                                 title: "AI Doctor Consultation",
@@ -41,7 +42,7 @@ struct GuideView: View {
                     
                     Section(header: Text("Consult with the pharmacy").font(.headline)) {
                         NavigationLink {
-                            MessageView()
+                            MessageView(userId: viewModel.user!.id, isAIChatEnabled: false)
                         } label: {
                             GuideLinkRow(
                                 title: "Message the pharmacy",

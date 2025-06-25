@@ -38,10 +38,7 @@ struct ContentView: View {
         
         let currentLocale: Locale = {
             if languageSettings.currentLocaleIdentifier == "default" || languageSettings.currentLocaleIdentifier.isEmpty {
-                // If "default" or empty, don't override, let system decide or use app's base
-                // Or, if you have a specific default you want to enforce:
-                // return Locale(identifier: "en") // Example default
-                return Locale.current // Relies on system's current locale as the base
+                return Locale.current
             } else {
                 return Locale(identifier: languageSettings.currentLocaleIdentifier)
             }

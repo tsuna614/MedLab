@@ -90,8 +90,10 @@ enum ApiEndpoint {
             return "/vouchers/redeemVoucher"
             
         // Message paths
-        case .fetchMessage, .generateMessage:
-            return "/messages"
+        case .fetchMessage:
+            return "/messages/fetchAIMessages"
+        case .generateMessage:
+            return "/messages/generateAIMessage"
         }
     }
 
